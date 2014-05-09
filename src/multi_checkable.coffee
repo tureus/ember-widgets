@@ -20,10 +20,17 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
   selectableItems: Ember.computed ->
     hash = @get 'content'
     hash.map (item) =>
-      Ember.Widgets.SelectableItem.create
-        label: get item, @get('optionLabelPath')
-        value: get item, @get('optionValuePath')
-        selected: item in @get('selections')
+      label = get item, @get('optionLabelPath')
+      value = get item, @get('optionValuePath')
+      selected = item in @get('selections')
+
+      emberized = Ember.Object.create
+        label: label
+        value: value
+      emberized.set @get('optionLabelPath'), label
+      emberized.set @get('optionValuePath'), value
+      emberized.set "selected", selected
+      emberized
   .property 'content.@each'
 
   thingobserver: Ember.observer ->
@@ -31,21 +38,21 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
       item.get "selected"
   , 'selectableItems.@each.selected'
 
-  itemControllers: Ember.computed ->
+  filteredItemControllers: Ember.computed ->
     Ember.ArrayController.create
-      content: @get 'selectableItems'
-  .property 'selectableItems'
+      content: @get 'filteredItems'
+  .property 'filteredItems.@each', 'query'
 
   # the list of content that is filtered down based on the query entered
   # in the textbox
-  filteredContent: Ember.computed ->
-    content = @get 'content'
+  filteredItems: Ember.computed ->
+    selectableItems = @get 'selectableItems'
     query   = @get 'query'
-    return content unless query
+    return selectableItems unless query
     # don't exclude items that are already selected
-    @get('content').filter (item) =>
+    @get('selectableItems').filter (item) =>
       @matcher(query, item)
-  .property 'content.@each', 'optionLabelPath', 'query'
+  .property 'selectableItems.@each', 'query'
 
   actions:
     toggle: (item) ->
