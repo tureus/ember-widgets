@@ -33,7 +33,7 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
     regex = new RegExp(escapedSearchText, 'i')
     regex.test(label)
 
-  thingobserver: Ember.observer ->
+  selectedItemsDidChange: Ember.observer ->
     @set "selections", @get("selectableItems").filter (item) ->
       item.get "selected"
   , 'selectableItems.@each.selected'
