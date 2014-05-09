@@ -11,7 +11,7 @@ set = (object, key, value) ->
 Ember.Widgets.SelectableItem = Ember.Object.extend
   label: undefined
   value: undefined
-  selected: false
+  selected: undefined
 
 
 Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.extend
@@ -26,15 +26,15 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
         selected: item in @get('selections')
   .property 'content.@each'
 
+  thingobserver: Ember.observer ->
+    @set "selections", @get("selectableItems").filter (item) ->
+      item.get "selected"
+  , 'selectableItems.@each.selected'
+
   itemControllers: Ember.computed ->
     Ember.ArrayController.create
       content: @get 'selectableItems'
-  .property 'selectableItems'    
-
-  didInsertElement: ->
-    controller = Ember.Widgets.MultiCheckableItemController.create()
-    controller.set 'content', @get('filteredContent')
-    @set 'itemControllers', controller
+  .property 'selectableItems'
 
   # the list of content that is filtered down based on the query entered
   # in the textbox
