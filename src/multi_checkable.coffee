@@ -18,20 +18,20 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
   selections: []
   templateName: 'multi-checkable'
   selectableItems: Ember.computed ->
-    hash = @get 'content'
-    hash.map (item) =>
-      label = get item, @get('optionLabelPath')
-      value = get item, @get('optionValuePath')
-      selected = item in @get('selections')
-
-      emberized = Ember.Object.create
-        label: label
-        value: value
-      emberized.set @get('optionLabelPath'), label
-      emberized.set @get('optionValuePath'), value
-      emberized.set "selected", selected
-      emberized
+    @get('content').map (item) =>
+      emberized = Ember.Widgets.SelectableItem.create
+        label: get item, @get('optionLabelPath')
+        value: get item, @get('optionValuePath')
+        selected: item in @get('selections')
   .property 'content.@each'
+
+  # It matches the item label with the query. This can be overrideen for better
+  matcher: (searchText, item) ->
+    return yes unless searchText
+    label = item.get('label')
+    escapedSearchText = searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+    regex = new RegExp(escapedSearchText, 'i')
+    regex.test(label)
 
   thingobserver: Ember.observer ->
     @set "selections", @get("selectableItems").filter (item) ->
@@ -40,12 +40,10 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
 
   filteredItemControllers: Ember.computed ->
     Ember.ArrayController.create
-      content: @get 'filteredItems'
-  .property 'filteredItems.@each', 'query'
+      content: @get 'filteredContent'
+  .property 'filteredContent.@each', 'query'
 
-  # the list of content that is filtered down based on the query entered
-  # in the textbox
-  filteredItems: Ember.computed ->
+  filteredContent: Ember.computed ->
     selectableItems = @get 'selectableItems'
     query   = @get 'query'
     return selectableItems unless query
@@ -54,10 +52,11 @@ Ember.Widgets.MultiCheckableComponent = Ember.Widgets.MultiSelectComponent.exten
       @matcher(query, item)
   .property 'selectableItems.@each', 'query'
 
-  actions:
-    toggle: (item) ->
-      selections = @get 'selections'
-      if item and not selections.contains item
-        selections.pushObject item
-      else if selections.contains item
-        selection.removeObject item
+  ##############################################################################
+  # Overwriting default behavior defined in Ember.Widgets.SelectComponent
+  ##############################################################################
+  deletePressed: -> Ember.K
+  upArrowPressed: -> Ember.K
+  downArrowPressed: -> Ember.K
+  enterPressed: -> Ember.K
+  escapePressed: -> Ember.K
