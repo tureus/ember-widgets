@@ -1,0 +1,27 @@
+<div>
+  {{input
+    type="text"
+    valueBinding="query"
+  }}
+
+  {{#if hasNoResults}}
+    <span class="ember-select-no-results">No results match "{{query}}"</span>
+  {{/if}}
+</div>
+
+{{#each itemControllers}}
+<div>
+  {{input
+    type="checkbox"
+    title=label
+    checked=selected
+    value=selected
+  }}
+  {{label}}
+</div>
+{{/each}}
+
+<div>Selected:</div>
+{{#each selections}}
+<div>{{displayName}}</div>
+{{/each}}

@@ -5,7 +5,7 @@ get = (object, key) ->
 
 set = (object, key, value) ->
   return unless object and key
-  object.set?(key, value) or object[key] = value;
+  object.set?(key, value) or object[key] = value
 
 # The view for each item in the select.
 Ember.Widgets.SelectOptionView = Ember.ListItemView.extend

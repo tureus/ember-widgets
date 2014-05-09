@@ -1,3 +1,12 @@
+window.foods = [
+    {name: 'apple', category: 'fruit', code: 'apple'},
+    {name: 'orange', type: 'fruit', code: 'orange'},
+    {name: 'squash', type: 'vegetable', code: 'squash'},
+    {name: 'kale', type: 'vegetable', code: 'kale'},
+    {name: 'water', type: 'beverage', code: 'h2o'},
+    {name: 'milk', type: 'beverage', code: 'milk'},
+]
+
 window.countries = [
     {name: 'Afghanistan', code: 'AF'},
     {name: 'Aland Islands', code: 'AX'},

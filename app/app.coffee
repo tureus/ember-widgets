@@ -27,6 +27,7 @@ App.Router.map ->
     @route 'select'
     @route 'textEditor'
     @route 'colorPicker'
+    @route 'multiCheckable'
 
 App.IndexRoute = Ember.Route.extend
   beforeModel: -> @transitionTo('emberWidgets.overview')
@@ -42,6 +43,9 @@ App.CustomModalContentView = Ember.View.extend
 
 App.EmberWidgetsSelectRoute = Ember.Route.extend
   model: -> window.countries
+
+App.EmberWidgetsMultiCheckableRoute = Ember.Route.extend
+  model: -> window.foods
 
 App.EmberWidgetsModalRoute = Ember.Route.extend
   actions:
