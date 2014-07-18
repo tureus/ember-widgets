@@ -27,6 +27,7 @@ App.Router.map ->
     @route 'select'
     @route 'textEditor'
     @route 'colorPicker'
+    @route 'multiCheck'
 
 App.IndexRoute = Ember.Route.extend
   beforeModel: -> @transitionTo('emberWidgets.overview')
@@ -66,3 +67,11 @@ App.EmberWidgetsModalRoute = Ember.Route.extend
 
 App.EmberWidgetsPopoverRoute = Ember.Route.extend
   model: -> {name: "Louis"}
+
+App.EmberWidgetsMultiCheckRoute = Ember.Route.extend
+  model: -> [
+    {name: 'A'},
+    {name: 'B'},
+    {name: 'C'},
+    {name: 'D'}
+  ]
