@@ -1,0 +1,37 @@
+.multi-checkable-controls {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dbdbdb;
+
+  // Need a strong selector
+  .text-left {
+    text-align: left;
+  }
+
+  // Select All and None
+  .disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    .opacity(.65);
+  }
+}
+
+.multi-checkable-items-container {
+  overflow-y: auto;
+}
+
+.multi-checkable {
+  display: block;
+
+  .fa-search {
+    position: absolute;
+    top: 8px;
+    right: 25px;
+  }
+
+  .multi-checkable-items-list {
+    -moz-column-gap: 20px;
+    -webkit-column-gap: 20px;
+    column-gap: 20px;
+  }
+}
+
