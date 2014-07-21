@@ -693,7 +693,7 @@
   opacity: 0.006500000000000001;
 }
 .multi-checkable-items-container {
-  top: 50px;
+  padding-top: 10px;
   overflow-y: auto;
 }
 .multi-checkable {
