@@ -1,35 +1,33 @@
-<script type="text/x-handlebars" data-template-name="components/multi-checkable">
-  <div class="form-horizontal multi-checkable-controls">
-    <div class="form-group form-group-sm">
-      <label class="col-xs-8 control-label form-label text-left">
-        Select: <a {{bind-attr class="disabled"}} {{action selectAll}}>All</a> | <a {{bind-attr class="disabled"}} {{action deselectAll}}>None</a>
-      </label>
-      <div class="col-xs-4">
-        {{input class="form-control input-sm" type="text" valueBinding="query"
-          disabled=disabled placeholder="Search"}}
-        <i class="fa fa-search"></i>
+<div class="form-horizontal multi-checkable-controls">
+  <div class="form-group form-group-sm">
+    <label class="col-xs-8 control-label form-label text-left">
+      Select: <a {{bind-attr class="disabled"}} {{action selectAll}}>All</a> | <a {{bind-attr class="disabled"}} {{action deselectAll}}>None</a>
+    </label>
+    <div class="col-xs-4">
+      {{input class="form-control input-sm" type="text" valueBinding="query"
+        disabled=disabled placeholder="Search"}}
+      <i class="fa fa-search"></i>
+    </div>
+  </div>
+</div>
+
+<div class="multi-checkable-items-container">
+  <div class="multi-checkable-items-list">
+    {{#each filteredContent}}
+      <div class="form-group form-group-sm">
+        <label {{bind-attr class=":checkbox-row disabled"}}>
+          {{!-- <div class="checkbox"> --}}
+          {{input class="checkbox-input" type="checkbox" checked=selected
+            disabled=disabled}}
+          <i class="checkbox-mark"></i>
+          {{!-- </span> --}}
+          <span class="form-label checkbox-label form-label-sub">{{label}}</span>
+        </label>
       </div>
-    </div>
+    {{/each}}
   </div>
 
-  <div class="multi-checkable-items-container">
-    <div class="multi-checkable-items-list">
-      {{#each filteredContent}}
-        <div class="form-group form-group-sm">
-          <label {{bind-attr class=":checkbox-row disabled"}}>
-            <div class="checkbox">
-              {{input class="checkbox-input" type="checkbox" checked=selected
-                disabled=disabled}}
-              <i class="checkbox-mark"></i>
-            </div>
-            <span class="form-label checkbox-label form-label-sub">{{label}}</span>
-          </label>
-        </div>
-      {{/each}}
-    </div>
-
-    {{#if hasNoResults}}
-      <p>No results match "{{query}}"</p>
-    {{/if}}
-  </div>
-</script>
+  {{#if hasNoResults}}
+    <p>No results match "{{query}}"</p>
+  {{/if}}
+</div>

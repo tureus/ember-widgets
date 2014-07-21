@@ -37,6 +37,19 @@ Ember.Widgets.SelectableItemArrayController = Ember.ArrayController.extend
   disabled: undefined
   selectAllOrDisabled: Ember.computed.or 'selectAll', 'disabled'
 
+  controllerAt: (idx, object, controllerClass) ->
+    container = @get 'container'
+    subControllers = @get '_subControllers'
+    subController = subControllers[idx]
+
+    return subController if subController
+    subController = @get('itemController').create
+      target: this
+      parentController: @get('parentController') or this
+      content: object
+    subControllers[idx] = subController;
+    return subController;
+
 
 Ember.Widgets.MultiCheckableComponent =
 Ember.Widgets.MultiSelectComponent.extend
@@ -58,7 +71,7 @@ Ember.Widgets.MultiSelectComponent.extend
   selectableItems: Ember.computed ->
     Ember.Widgets.SelectableItemArrayController.create
       target: this
-      itemController: 'selectableItem'
+      itemController: Ember.Widgets.SelectableItemController
       content: @get('content')
       container: @get('container')
       component: this
