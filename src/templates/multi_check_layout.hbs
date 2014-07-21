@@ -16,11 +16,9 @@
     {{#each filteredContent}}
       <div class="form-group form-group-sm">
         <label {{bind-attr class=":checkbox-row disabled"}}>
-          <div class="checkbox">
-            {{input class="checkbox-input" type="checkbox" checked=selected
-              disabled=disabled}}
-            <i class="checkbox-mark"></i>
-          </div>
+          {{input class="checkbox-input" type="checkbox" checked=selected
+            disabled=disabled}}
+          <i class="checkbox-mark"></i>
           <span class="form-label checkbox-label form-label-sub">{{label}}</span>
         </label>
       </div>
