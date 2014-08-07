@@ -52,10 +52,8 @@ module.exports = (grunt) ->
         options:
           targetDir: 'vendor'
           layout: 'byComponent'
-          install: true
+          copy: false
           verbose: true
-          cleanTargetDir: false
-          cleanBowerDir: true
           bowerOptions: {}
 
     coffee:
