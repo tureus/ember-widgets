@@ -7,16 +7,17 @@ module.exports = function(config) {
     frameworks: ['qunit'],
     // list of files / patterns to load in the browser
     files: [
+      'vendor/jquery/jquery.js',
+      'vendor/handlebars/handlebars.js',
+      'vendor/lodash/lodash.js',
+      'vendor/ember/ember.js',
+      'vendor/ember-list-view/list-view.js',
+      'vendor/rangy/rangy-core.js',
+      'vendor/rangy/rangy-selectionsaverestore.js',
+      'vendor/sinonjs/sinon.js',
+
       'dependencies/google-code-prettify/prettify.js',
-      'dependencies/jquery/jquery.js',
       'dependencies/jquery-ui/jquery-ui-1.10.1.custom.min.js',
-      'dependencies/handlebars/handlebars.js',
-      'dependencies/lodash/lodash.js',
-      'dependencies/ember/ember.js',
-      'dependencies/list-view.js',
-      'dependencies/rangy/rangy-core.js',
-      'dependencies/rangy/rangy-selectionsaverestore.js',
-      'dependencies/sinonjs/sinon.js',
       'gh_pages/app.js',
 
       'http://fast.fonts.net/cssapi/cc61a2f8-3c32-45ef-9be7-fc0cc1fab22b.css',
