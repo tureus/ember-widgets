@@ -44,6 +44,28 @@ App.CustomModalContentView = Ember.View.extend
 App.EmberWidgetsSelectRoute = Ember.Route.extend
   model: -> window.countries
 
+App.EmberWidgetsSelectController = Ember.Controller.extend
+  actions:
+    addCountries: ->
+      @set('model', Ember.A())
+
+      _.forEach(window.countries, (country) =>
+        console.log(country.name)
+        @get('model').addObject(country))
+
+    randomNames: ->
+      @set('model', Ember.A())
+      d1 = new Date()
+      for num in [0..3000]
+        obj = 
+          name: Math.random().toString()
+          code: Math.random().toString()
+        @get('model').addObject(obj)
+      Ember.run.scheduleOnce('afterRender', null, ->
+        d2 = new Date()
+        console.log("Time: " + (d2 - d1).toString())
+      )
+
 App.EmberWidgetsModalRoute = Ember.Route.extend
   actions:
     showModal: ->
@@ -60,8 +82,6 @@ App.EmberWidgetsModalRoute = Ember.Route.extend
         cancel: "modalCancel"
         size: 'small'
         content: "This is quite small isn't it? You can also use 'large'."
-
-
 
     showModalWithCustomContent: ->
       Ember.Widgets.ModalComponent.popup
