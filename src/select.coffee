@@ -208,10 +208,12 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     # TODO(chris): review & find a way to use ArrayProxy
     ContentProxy = Ember.ObjectProxy.extend
       filteredContent: Ember.computed ->
+        console.log('in filtered content!')
         Ember.A((@get('content') or []).filter (item) -> matcher(query, item))
       .property "content.@each.#{optionLabelPath}"
 
       sortedFilteredContent: Ember.computed ->
+        console.log('in sorted filtered content!')
         Ember.A(
           _.sortBy (@get('filteredContent') or []), (item) =>
             Ember.get(item, optionLabelPath)?.toLowerCase()
