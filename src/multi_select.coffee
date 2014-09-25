@@ -53,24 +53,17 @@ Ember.Widgets.MultiSelectComponent = Ember.Widgets.SelectComponent.extend
 
   # the list of content that is filtered down based on the query entered
   # in the textbox
-  preparedContent: Ember.computed ->
+  filteredContent: Ember.computed ->
     content = @get 'content'
+    query   = @get 'query'
     selections = @get 'selections'
     return Ember.A [] unless content and selections
     # excludes items that are already selected
-    
-    nonSelectedFilteredItems = Ember.A(
-      @get('filteredContent').filter (item) =>
-        not selections.contains(item)
-    )
-
-    return nonSelectedFilteredItems unless @get('sortLabels')
-
     Ember.A(
-      @get('sortedFilteredContent').filter (item) =>
-        not selections.contains(item)
+      @get('content').filter (item) =>
+        not selections.contains(item) and @matcher(query, item)
     )
-  .property 'content.@each', 'filteredContent.@each', 'sortedFilteredContent.@each', 'selections.@each'
+  .property 'content.@each', 'optionLabelPath', 'query', 'selections.@each'
 
   # uses single select's "selection" value - adds it to selections and
   # then clears the selection value so that it can be re-selected
