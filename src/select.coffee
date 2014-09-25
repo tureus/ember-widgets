@@ -220,7 +220,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
           _.sortBy (@get('filteredContent') or []), (item) =>
             Ember.get(item, optionLabelPath)?.toLowerCase()
         )
-      .property "filteredContent.[]"
+      .property "content.@each.#{optionLabelPath}"
 
     ContentProxy.create
       content: @get('content')
