@@ -200,8 +200,6 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     if @get('sortLabels') then @get('sortedFilteredContent') else @get('filteredContent')
   .property 'sortLabels', 'filteredContent.@each', 'sortedFilteredContent.@each'
 
-  counter: 0
-
   contentProxy: Ember.computed ->
     matcher = (searchText, item) => @matcher(searchText, item)
     optionLabelPath = @get('optionLabelPath')
@@ -212,18 +210,17 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     # TODO(chris): review & find a way to use ArrayProxy
     ContentProxy = Ember.ObjectProxy.extend
       filteredContent: Ember.computed ->
+        console.log("finished filtering content (length: #{@get('filteredContent.length')}")
         Ember.A((@get('content') or []).filter (item) -> matcher(query, item))
       .property "content.@each.#{optionLabelPath}"
 
       sortedFilteredContent: Ember.computed ->
-        retVal = Ember.A(
+        console.log("finished sorting content (length: #{@get('filteredContent.length')}")
+        Ember.A(
           _.sortBy (@get('filteredContent') or []), (item) =>
             Ember.get(item, optionLabelPath)?.toLowerCase()
         )
-        @counter++
-        console.log("#{@counter} -- finished sorting content (length: #{@get('content.length')}")
-        retVal
-      .property "content.@each.#{optionLabelPath}"
+      .property "filteredContent.@each.#{optionLabelPath}"
 
     ContentProxy.create
       content: @get('content')
