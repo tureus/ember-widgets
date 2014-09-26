@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "main": "Gruntfile.js",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "postinstall": "bower install"
   },
   "repository": {
     "type": "git",

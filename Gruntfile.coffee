@@ -243,5 +243,5 @@ module.exports = (grunt) ->
   # build dist files: same as default but no bower or watch
   grunt.registerTask "dist", [ "clean", "replace", "build_srcs", "build_app", "build_tests", "less", "copy", "uglify", "usebanner" ]
 
-  grunt.registerTask "default", [ "clean", "bower", "replace", "build_srcs", "build_app", "build_tests", "less", "copy", "uglify", "usebanner", "watch" ]
+  grunt.registerTask "default", [ "clean", "replace", "build_srcs", "build_app", "build_tests", "less", "copy", "uglify", "usebanner", "watch" ]
 
