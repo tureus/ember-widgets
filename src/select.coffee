@@ -216,6 +216,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
       .property "content.@each.#{optionLabelPath}"
 
       debouncedFilterAndSort: ->
+        console.log('here!')
         if @get('contentChanged')
           # filter
           filteredContent = Ember.A((@get('content') or []).filter (item) -> matcher(query, item))
