@@ -56,7 +56,8 @@ App.EmberWidgetsSelectController = Ember.Controller.extend
     randomNames: ->
       @set('model', Ember.A())
       d1 = new Date()
-      for num in [0..3000]
+      console.log('Start adding element', d1)
+      for num in [0..4000]
         obj = 
           name: Math.random().toString()
           code: Math.random().toString()
