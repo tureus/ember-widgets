@@ -198,39 +198,24 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   # in the textbox
   preparedContent: Ember.computed ->
     if @get('sortLabels') then @get('sortedFilteredContent') else @get('filteredContent')
-  .property 'sortLabels', 'filteredContent.length', 'sortedFilteredContent.length'
+  .property 'sortLabels', 'filteredContent', 'sortedFilteredContent'
 
   contentProxy: Ember.computed ->
     matcher = (searchText, item) => @matcher(searchText, item)
     optionLabelPath = @get('optionLabelPath')
     query = @get('query')
 
-    # TODO(chris): review & find a way to use ArrayProxy
     ContentProxy = Ember.ObjectProxy.extend
-      contentObserver: (->
-        Ember.run.debounce(@, @debouncedFilterAndSort, 300)
-      ).observes('contentChanged').on('init')
+      filteredContent:  Ember.computed ->
+        (@get('content') or []).filter (item) ->
+          matcher(query, item)
+      .property("content.@each.#{optionLabelPath}")
 
-      contentChanged: Ember.computed ->
-        yes
-      .property "content.@each.#{optionLabelPath}"
+      sortedFilteredContent: Ember.computed ->
+        _.sortBy ( @get('filteredContent') ), (item) =>
+          Ember.get(item, optionLabelPath)?.toLowerCase()
+      .property("filteredContent")
 
-      debouncedFilterAndSort: ->
-        if @get('contentChanged')
-          # filter
-          filteredContent = Ember.A((@get('content') or []).filter (item) -> matcher(query, item))
-          @set 'filteredContent', filteredContent
-
-          # sort
-          sortedContent = Ember.A(
-            _.sortBy (@get('filteredContent') or []), (item) =>
-              Ember.get(item, optionLabelPath)?.toLowerCase()
-          )
-          @set 'sortedFilteredContent', sortedContent
-          @set 'contentChanged', no
-
-      filteredContent: []
-      sortedFilteredContent: []
 
     ContentProxy.create
       content: @get('content')
@@ -256,9 +241,9 @@ Ember.AddeparMixins.ResizeHandlerMixin,
       result.pushObject  Ember.Object.create isGroupOption: yes, name:key
       result.pushObjects groups[key]
     result
-  .property 'preparedContent.@each', 'optionGroupPath', 'labels.@each'
+  .property 'preparedContent', 'optionGroupPath', 'labels.[]'
 
-  hasNoResults: Ember.computed.empty 'preparedContent'
+  hasNoResults: Ember.computed.empty 'filteredContent'
 
   value: Ember.computed (key, value) ->
     if arguments.length is 2 # setter
@@ -296,10 +281,11 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   , 'content.@each'
 
   selectableOptionsDidChange: Ember.observer ->
-    highlighted = @get('highlighted')
-    if not @get('selectableOptions').contains(highlighted)
-      @set 'highlighted', @get('selectableOptions.firstObject')
-  , 'selectableOptions'
+    if( @get('showDropdown') )
+      highlighted = @get('highlighted')
+      if not @get('selectableOptions').contains(highlighted)
+        @set 'highlighted', @get('selectableOptions.firstObject')
+  , 'selectableOptions', 'showDropdown'
 
   ###
   # SELECTION RELATED
