@@ -27,67 +27,11 @@
       </div>
     </div>
 
-    <div class="col-md-6">
-      <h3>Multi-Select</h3>
-      <div class="example-container">
-        {{multi-select-component
-          contentBinding="model"
-          optionLabelPath="name"
-          optionValuePath="code"
-          classNames="multi-select-example"
-        }}
-      </div>
-
-      <h4 class="bumper-30">Application.hbs</h4>
-      <div class="highlight">
-<pre class="prettyprint lang-html">&#123;&#123;multi-select-component
-  contentBinding="model"
-  optionLabelPath="name"
-  optionValuePath="code"
-  classNames="multi-select-example"
-&#125;&#125;</pre>
-      </div>
-    </div>
   </div>
   <div class="row">
     <div class="col-md-6">
       <button {{action 'addCountries'}}>Add Countries</button>
       <button {{action 'randomNames'}}>Random Names</button>
     </div>
-
-    <div class="col-md-6">
-      <h3>Multi-Select <small>Small</small></h3>
-      <div class="example-container">
-        {{multi-select-component
-          contentBinding="model"
-          optionLabelPath="name"
-          optionValuePath="code"
-          classNames="multi-select-example"
-          choicesFieldClass="input-xs"
-        }}
-      </div>
-
-      <h4 class="bumper-30">Application.hbs</h4>
-      <div class="highlight">
-<pre class="prettyprint lang-html">&#123;&#123;multi-select-component
-  contentBinding="model"
-  optionLabelPath="name"
-  optionValuePath="code"
-  classNames="multi-select-example"
-  choicesFieldClass="input-xs"
-&#125;&#125;</pre>
-      </div>
-    </div>
   </div>
-</div>
-
-<div class="pull-right">
-  Test for dynamic right align
-  {{select-component
-    contentBinding="model"
-    prompt="Select a Country"
-    optionLabelPath="name"
-    optionValuePath="name"
-    selectionBinding="selection"
-  }}
 </div>
