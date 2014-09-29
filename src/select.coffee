@@ -110,41 +110,47 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     return if (@get('_state') or @get('state')) isnt 'inDOM' or @get('showDropdown') is no
 
     # Render the dropdown in a hidden state to get the size
-    @$('.js-dropdown-menu').css('visibility', 'hidden');
+    # @$('.js-dropdown-menu').css('visibility', 'hidden');
 
-    # Render the dropdown completely into the DOM for offset()
-    dropdownButton = @$('.js-dropdown-toggle')[0]
-    dropdownButtonHeight = @$(dropdownButton).outerHeight()
-    dropdownButtonOffset = @$(dropdownButton).offset()
+    # # Render the dropdown completely into the DOM for offset()
+    # dropdownButton = @$('.js-dropdown-toggle')[0]
+    # dropdownButtonHeight = @$(dropdownButton).outerHeight()
+    # dropdownButtonOffset = @$(dropdownButton).offset()
 
-    dropdownMenu = @$('.js-dropdown-menu')[0]
-    dropdownMenuHeight = @$(dropdownMenu).outerHeight()
-    dropdownMenuWidth = @$(dropdownMenu).outerWidth()
-    dropdownMenuOffset = @$(dropdownMenu).offset()
+    # dropdownMenu = @$('.js-dropdown-menu')[0]
+    # dropdownMenuHeight = @$(dropdownMenu).outerHeight()
+    # dropdownMenuWidth = @$(dropdownMenu).outerWidth()
+    # dropdownMenuOffset = @$(dropdownMenu).offset()
 
-    # Only switch from dropUp to dropDown if there's this much extra space
-    # under where the dropDown would be. This prevents the popup from jiggling
-    # up and down
-    dropdownMargin = 15
+    # # Only switch from dropUp to dropDown if there's this much extra space
+    # # under where the dropDown would be. This prevents the popup from jiggling
+    # # up and down
+    # dropdownMargin = 15
 
-    if @get('isDropup')
-      dropdownMenuBottom = dropdownButtonOffset.top + dropdownButtonHeight +
-        dropdownMenuHeight + dropdownMargin
-    else
-      dropdownMenuBottom = dropdownMenuOffset.top + dropdownMenuHeight
+    # if @get('isDropup')
+      # dropdownMenuBottom = dropdownButtonOffset.top + dropdownButtonHeight +
+        # dropdownMenuHeight + dropdownMargin
+    # else
+      # dropdownMenuBottom = dropdownMenuOffset.top + dropdownMenuHeight
 
-    # regardless of whether it is dropping up or down, we want to know
-    # where dropUp will put the top since we don't want this to fall
-    # above the top of the screen
-    dropupMenuTop = dropdownButtonOffset.top - dropdownMenuHeight -
-      dropdownMargin
+    # # regardless of whether it is dropping up or down, we want to know
+    # # where dropUp will put the top since we don't want this to fall
+    # # above the top of the screen
+    # dropupMenuTop = dropdownButtonOffset.top - dropdownMenuHeight -
+      # dropdownMargin
 
-    @set 'isDropup', dropupMenuTop > window.scrollY and
-      dropdownMenuBottom > window.innerHeight
-    @set 'isDropdownMenuPulledRight', dropdownButtonOffset.left +
-      dropdownMenuWidth + dropdownMargin > window.innerWidth
+    # @set 'isDropup', dropupMenuTop > window.scrollY and
+      # dropdownMenuBottom > window.innerHeight
+    # @set 'isDropdownMenuPulledRight', dropdownButtonOffset.left +
+      # dropdownMenuWidth + dropdownMargin > window.innerWidth
 
-    @$('.js-dropdown-menu').css('visibility', 'visible');
+    # console.log('css visible')
+    # @$('.js-dropdown-menu').css('visibility', 'visible');
+
+    # Ember.run.schedule 'afterRender', @, ->
+    Ember.run.next @, ->
+      console.log('updateDropdownLayout afterRender')
+      this.get('filteredContent')
   , 'showDropdown'
 
   onResizeEnd: ->
@@ -189,6 +195,13 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   # This is a hack. Ember.ListView doesn't handle case when total height
   # is less than height properly
   listView: Ember.ListView.extend
+    didInsertElement: ->
+      console.log('insert lisView')
+      @_super.apply(@, arguments)
+    willDestroy: ->
+      console.log('destroy lisView')
+      @_super.apply(@, arguments)
+
     style: Ember.computed ->
       height = Math.min @get('height'), @get('totalHeight')
       "height: #{height}px"
@@ -206,9 +219,23 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     query = @get('query')
 
     ContentProxy = Ember.ObjectProxy.extend
+      isLoading: Ember.computed (key, value) ->
+        if arguments.length > 1
+          value
+        else
+          true
+      .property('filteredContent')
+
       filteredContent:  Ember.computed ->
-        (@get('content') or []).filter (item) ->
+        console.log('filteredContent')
+        array = (@get('content') or []).filter (item) ->
           matcher(query, item)
+
+        Ember.run.later @, ->
+          console.log('filteredContent sets isLoading')
+          @set('isLoading', false)
+        , 50
+        array
       .property("content.@each.#{optionLabelPath}")
 
       sortedFilteredContent: Ember.computed ->
@@ -221,6 +248,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
       content: @get('content')
   .property 'content', 'optionLabelPath', 'query'
 
+  isLoading: Ember.computed.alias 'contentProxy.isLoading'
   filteredContent: Ember.computed.alias 'contentProxy.filteredContent'
   sortedFilteredContent: Ember.computed.alias 'contentProxy.sortedFilteredContent'
 
@@ -280,12 +308,19 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     @set 'selection', content.findProperty(defaultPath)
   , 'content.@each'
 
-  selectableOptionsDidChange: Ember.observer ->
-    if( @get('showDropdown') )
-      highlighted = @get('highlighted')
-      if not @get('selectableOptions').contains(highlighted)
-        @set 'highlighted', @get('selectableOptions.firstObject')
-  , 'selectableOptions', 'showDropdown'
+  # selectableOptionsDidChange: Ember.observer ->
+    # if( @get('showDropdown') )
+      # # try to get this in the next runloop
+      # # to have a chance to render the spinner
+      # Ember.run.schedule 'afterRender', @, ->
+        # console.log('afterRender')
+
+      # Ember.run.next @, ->
+        # console.log('run next')
+        # highlighted = @get('highlighted')
+        # if not @get('selectableOptions').contains(highlighted)
+          # @set 'highlighted', @get('selectableOptions.firstObject')
+  # , 'selectableOptions', 'showDropdown'
 
   ###
   # SELECTION RELATED
@@ -323,7 +358,9 @@ Ember.AddeparMixins.ResizeHandlerMixin,
 
   keyDown: (event) ->
     # show dropdown if dropdown is not already showing
-    return @set('showDropdown', yes) unless @get 'showDropdown'
+    unless @get 'showDropdown'
+      # Execute in the next run loop to allow the UI to refresh and display spinner/loading info
+      return @set('showDropdown', yes)
     map   = @get 'KEY_EVENTS'
     method = map[event.keyCode]
     @get(method)?.apply(this, arguments) if method
@@ -390,6 +427,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   actions:
     toggleDropdown: (event) ->
       return if @get('disabled')
+      console.log('toggleDropdown')
       @toggleProperty 'showDropdown'
 
     hideDropdown: (event) ->

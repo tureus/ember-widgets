@@ -12,25 +12,29 @@
 
 <div {{bind-attr class=":dropdown-menu :js-dropdown-menu dropdownMenuClass
   isDropdownMenuPulledRight:pull-right"}}>
-  {{#if showDropdown}}
-    {{#unless isSelect}}
-      <div class="ember-select-search">
-        {{view searchView}}
-      </div>
-    {{/unless}}
-    {{view listView
-      tagName="ul"
-      classNames="ember-select-results"
-      heightBinding="dropdownHeight"
-      rowHeightBinding="rowHeight"
-      contentBinding="groupedContent"
-      itemViewClassBinding="itemView"
-    }}
-    {{#if hasNoResults}}
-      <span class="ember-select-no-results">No results match "{{query}}"</span>
+  {{#unless isSelect}}
+    <div class="ember-select-search">
+      {{view searchView}}
+    </div>
+  {{/unless}}
+  {{#if isLoading}}
+    <span class="ember-select-no-results">Loading...</span>
+  {{else}}
+    {{#if showDropdown}}
+      {{view listView
+        tagName="ul"
+        classNames="ember-select-results"
+        heightBinding="dropdownHeight"
+        rowHeightBinding="rowHeight"
+        contentBinding="groupedContent"
+        itemViewClassBinding="itemView"
+      }}
+      {{#if hasNoResults}}
+        <span class="ember-select-no-results">No results match "{{query}}"</span>
+      {{/if}}
     {{/if}}
-    {{#if selectMenuView}}
-      {{view selectMenuView}}
-    {{/if}}
+  {{/if}}
+  {{#if selectMenuView}}
+    {{view selectMenuView}}
   {{/if}}
 </div>
