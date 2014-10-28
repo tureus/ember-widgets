@@ -19,6 +19,9 @@ module.exports = (grunt) ->
 
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
+    banner: '/*!\n* <%=pkg.name %> v<%=pkg.version%>\n' +
+            '* Copyright 2013-<%=grunt.template.today("yyyy")%> Addepar Inc.\n' +
+            '* See LICENSE.\n*/',
 
     clean:
       target: ['build', 'dist' , 'gh_pages']
@@ -112,13 +115,16 @@ module.exports = (grunt) ->
           "gh_pages/css/app.css": "app/assets/css/app.less"
 
     usebanner:
-      dist:
+      js:
         options:
-          banner: '/*!\n* <%=pkg.name %> v<%=pkg.version%>\n' +
-            '* Copyright 2013-<%=grunt.template.today("yyyy")%> Addepar Inc.\n' +
-            '* See LICENSE.\n*/',
+          banner: '<%=banner%>'
         files:
-          src: ['dist/js/*', 'dist/css/*']
+          src: ['dist/js/*']
+      css:
+        options:
+          banner: '<%=banner%>'
+        files:
+          src: ['dist/css/*']
 
     replace:
       global_version:
@@ -169,13 +175,13 @@ module.exports = (grunt) ->
         tasks: [ "default" ]
       src:
         files: [ "src/**/*.coffee"]
-        tasks: [ "coffee:srcs", "neuter" ]
+        tasks: [ "coffee:srcs", "neuter", "uglify", "usebanner:js" ]
       test:
         files: [ "tests/**/*.coffee"]
         tasks: [ "coffee:tests", "neuter" ]
       src_handlebars:
         files: [ "src/**/*.hbs" ]
-        tasks: [ "emberTemplates", "neuter" ]
+        tasks: [ "emberTemplates", "neuter", "uglify", "usebanner:js" ]
       app:
         files: [ "app/**/*.coffee", "dependencies/**/*.js", "vendor/**/*.js" ]
         tasks: [ "coffee:app", "neuter" ]
@@ -187,16 +193,13 @@ module.exports = (grunt) ->
                  "dependencies/**/*.less", "dependencies/**/*.css",
                  "vendor/**/*.less", "vendor/**/*.css",
                  "app/assets/**/*.less", "app/assets/**/*.css" ]
-        tasks: ["less", "copy"]
+        tasks: [ "less", "copy", "usebanner:css" ]
       copy:
         files: [ "app/index.html" ]
         tasks: [ "copy" ]
       bower:
         files: [ 'bower.json']
         tasks: [ 'bower']
-      uglify:
-        files: [ 'dist/js/ember-widgets.js' ]
-        tasks: [ 'uglify' ]
 
     ###
       Runs all .html files found in the test/ directory through PhantomJS.
@@ -241,7 +244,7 @@ module.exports = (grunt) ->
   grunt.registerTask "build_tests", [ "coffee:tests", "emberTemplates", "neuter" ]
 
   # build dist files: same as default but no bower or watch
-  grunt.registerTask "dist", [ "clean", "replace", "build_srcs", "build_app", "build_tests", "less", "copy", "uglify", "usebanner" ]
+  grunt.registerTask "dist", [ "clean", "bower", "replace", "build_srcs", "build_app", "build_tests", "less", "copy", "uglify", "usebanner" ]
 
-  grunt.registerTask "default", [ "clean", "bower", "replace", "build_srcs", "build_app", "build_tests", "less", "copy", "uglify", "usebanner", "watch" ]
+  grunt.registerTask "default", [ "dist", "watch" ]
 
