@@ -103,6 +103,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
      # 2. Tabbable element inside the content element
      # 3. The close button (has class "close")
      # 4. The dialog itself
+    debugger
     hasFocus = []
     # _currentFocus = @get 'currentFocus'
     # if _currentFocus?
