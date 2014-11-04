@@ -209,35 +209,35 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
 
   # capture the TAB key and make a cycle tab loop among the tabbable elements
   # inside the modal. Remove the close button from the loop
-  keyDown: (event) ->
-    if (event.keyCode != @KEY_CODES.TAB or event.isDefaultPrevented())
-      return
-    if event.keyCode == @KEY_CODES.TAB
-      tabbableObjects = @$(":tabbable")
+  # keyDown: (event) ->
+  #   if (event.keyCode != @KEY_CODES.TAB or event.isDefaultPrevented())
+  #     return
+  #   if event.keyCode == @KEY_CODES.TAB
+  #     tabbableObjects = @$(":tabbable")
 
-      # remove close button out of tabbable objects list
-      _.remove tabbableObjects, (item) ->
-        item.className.indexOf("close") > -1
+  #     # remove close button out of tabbable objects list
+  #     _.remove tabbableObjects, (item) ->
+  #       item.className.indexOf("close") > -1
 
-      _currentFocus = $(document.activeElement)?[0]
-      if _.findIndex(tabbableObjects, _currentFocus) == -1
-        @_focusTabbable()
+  #     _currentFocus = $(document.activeElement)?[0]
+  #     if _.findIndex(tabbableObjects, _currentFocus) == -1
+  #       @_focusTabbable()
 
-      # if there is no tabbable objects, set focus to the modal
-      if (tabbableObjects.length > 0)
-        first = tabbableObjects[0]
-        last = tabbableObjects[tabbableObjects.length - 1]
-        # check the two ends of the array to make it the tab loop
-        if (event.target == last and not event.shiftKey)
-          first.focus()
-          event.preventDefault()
-        else if (event.target == first and event.shiftKey)
-          last.focus()
-          event.preventDefault()
-        else
-          @_super(event)
-      else
-        @_super(event)
+  #     # if there is no tabbable objects, set focus to the modal
+  #     if (tabbableObjects.length > 0)
+  #       first = tabbableObjects[0]
+  #       last = tabbableObjects[tabbableObjects.length - 1]
+  #       # check the two ends of the array to make it the tab loop
+  #       if (event.target == last and not event.shiftKey)
+  #         first.focus()
+  #         event.preventDefault()
+  #       else if (event.target == first and event.shiftKey)
+  #         last.focus()
+  #         event.preventDefault()
+  #       else
+  #         @_super(event)
+  #     else
+  #       @_super(event)
 
 
 Ember.Widgets.ModalComponent.reopenClass
