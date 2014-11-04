@@ -125,7 +125,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
     isActive = $.contains(@$()[0], event.target)
     if not isActive
       event.preventDefault()
-      @_focusTabbable()
+    @_focusTabbable()
 
   didInsertElement: ->
     @_super()
@@ -161,10 +161,10 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
     # debugger
     modality = @get 'enforceModality'
     isActive = $.contains(@$()[0], event.target)
-    currentFocus = $(document.activeElement)
+    _currentFocus = $(document.activeElement)[0]
     if modality == no and not isActive
       @hide() unless @get('enforceModality')
-    else if not isActive or not $.contains(@$()[0], currentFocus)
+    else if not isActive or not $.contains(@$()[0], _currentFocus)
       @_focusTabbable()
 
   mouseDown: (event) ->
@@ -210,7 +210,6 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   # capture the TAB key and make a cycle tab loop among the tabbable elements
   # inside the modal. Remove the close button from the loop
   keyDown: (event) ->
-    debugger
     if (event.keyCode != @KEY_CODES.TAB or event.isDefaultPrevented())
       return
     if event.keyCode == @KEY_CODES.TAB
