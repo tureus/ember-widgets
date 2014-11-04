@@ -104,9 +104,9 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
      # 3. The close button (has class "close")
      # 4. The dialog itself
     hasFocus = []
-    _currentFocus = @get 'currentFocus'
-    if _currentFocus?
-      hasFocus = [_currentFocus]
+    # _currentFocus = @get 'currentFocus'
+    # if _currentFocus?
+    #   hasFocus = [_currentFocus]
     # else
     #   hasFocus = @$( "[autofocus]" )
     if hasFocus.length == 0
