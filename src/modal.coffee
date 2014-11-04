@@ -219,9 +219,9 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       # _.remove tabbableObjects, (item) ->
       #   item.className.indexOf("close") > -1
 
-      _currentFocus = $(document.activeElement)?[0]
-      if _.findIndex(tabbableObjects, _currentFocus) == -1
-        @_focusTabbable()
+      # _currentFocus = $(document.activeElement)?[0]
+      # if _.findIndex(tabbableObjects, _currentFocus) == -1
+      #   @_focusTabbable()
 
       # # if there is no tabbable objects, set focus to the modal
       # if (tabbableObjects.length > 0)
