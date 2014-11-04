@@ -157,19 +157,19 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       if event.which is 27 and @get('escToCancel') # ESC
         @send 'sendCancel'
 
-  click: (event) ->
-    # debugger
-    modality = @get 'enforceModality'
-    isActive = $.contains(@$()[0], event.target)
-    _currentFocus = $(document.activeElement)[0]
-    if modality == no and not isActive
-      @hide() unless @get('enforceModality')
-    else if not isActive or not $.contains(@$()[0], _currentFocus)
-      @_focusTabbable()
+  # click: (event) ->
+  #   # debugger
+  #   modality = @get 'enforceModality'
+  #   isActive = $.contains(@$()[0], event.target)
+  #   _currentFocus = $(document.activeElement)[0]
+  #   if modality == no and not isActive
+  #     @hide() unless @get('enforceModality')
+  #   else if not isActive or not $.contains(@$()[0], _currentFocus)
+  #     @_focusTabbable()
 
-  mouseDown: (event) ->
-    @set 'currentFocus', $(document.activeElement)[0]
-    @_keepFocus(event)
+  # mouseDown: (event) ->
+  #   @set 'currentFocus', $(document.activeElement)[0]
+  #   @_keepFocus(event)
 
   hide: ->
     @set 'isShowing', no
