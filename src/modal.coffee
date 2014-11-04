@@ -220,7 +220,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       # # remove close button out of tabbable objects list
       # _.remove tabbableObjects, (item) ->
       #   item.className.indexOf("close") > -1
-
+      debugger
       _currentFocus = $(document.activeElement)?[0]
       if _.findIndex(tabbableObjects, _currentFocus) == -1
         @_focusTabbable()
