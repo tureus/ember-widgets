@@ -26,6 +26,8 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   cancel: Ember.K
   close: Ember.K
 
+  currentFocus: null
+
   headerViewClass: Ember.View.extend
     templateName: 'modal_header'
 
@@ -91,23 +93,24 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       else @sendAction 'close'
       @hide()
 
+  _checkInnerFocus: (currentFocus) ->
+    tabbableObjects = @$(":tabbable")
+    return _.findIndex(tabbableObjects, currentFocus) > -1
+
   _focusTabbable: ->
      # Set focus to the first match:
      # 1. First element inside the dialog matching [autofocus]
      # 2. Tabbable element inside the content element
      # 3. The close button (has class "close")
      # 4. The dialog itself
-    currentFocus = $(document.activeElement)?[0]
     hasFocus = []
-    tabbableObjects = @$(":tabbable")
-    if _.findIndex(tabbableObjects, currentFocus) > -1
-      hasFocus = [currentFocus]
+    _currentFocus = @get 'currentFocus'
+    if _currentFocus?
+      hasFocus = [_currentFocus]
     else
       hasFocus = @$( "[autofocus]" )
     if hasFocus.length == 0
       hasFocus = @$( ":tabbable" )
-    if hasFocus.length == 0
-      hasFocus = this
     if hasFocus.length > 0
       if hasFocus[0].className.indexOf("close") > -1
         # if we have more than two tabbable objects, we do not want to tab to
@@ -119,8 +122,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
 
   _keepFocus: (event) ->
     focusable = @$(':focusable')
-    isActive = $.contains(@$()[0], event.target) and
-      _.indexOf(focusable,event.target) > -1
+    isActive = $.contains(@$()[0], event.target)
     if not isActive
       event.preventDefault()
       @_focusTabbable()
@@ -156,13 +158,17 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
         @send 'sendCancel'
 
   click: (event) ->
+    # debugger
     modality = @get 'enforceModality'
-    if event.target isnt @$()[0] or  modality == yes
-      @_focusTabbable()
-    else
+    isActive = $.contains(@$()[0], event.target)
+    currentFocus = $(document.activeElement)
+    if modality == no and not isActive
       @hide() unless @get('enforceModality')
+    else if not isActive or not $.contains(@$()[0], currentFocus)
+      @_focusTabbable()
 
   mouseDown: (event) ->
+    @set 'currentFocus', $(document.activeElement)[0]
     @_keepFocus(event)
 
   hide: ->
@@ -204,6 +210,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   # capture the TAB key and make a cycle tab loop among the tabbable elements
   # inside the modal. Remove the close button from the loop
   keyDown: (event) ->
+    debugger
     if (event.keyCode != @KEY_CODES.TAB or event.isDefaultPrevented())
       return
     if event.keyCode == @KEY_CODES.TAB
@@ -213,8 +220,9 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       _.remove tabbableObjects, (item) ->
         item.className.indexOf("close") > -1
 
-      currentFocusIndex = _.findIndex tabbableObjects, (item) ->
-        item == event.target
+      _currentFocus = $(document.activeElement)?[0]
+      if _.findIndex(tabbableObjects, _currentFocus) == -1
+        @_focusTabbable()
 
       # if there is no tabbable objects, set focus to the modal
       if (tabbableObjects.length > 0)
