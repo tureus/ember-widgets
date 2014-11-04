@@ -26,8 +26,6 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   cancel: Ember.K
   close: Ember.K
 
-  currentFocus:     null
-
   headerViewClass: Ember.View.extend
     templateName: 'modal_header'
 
@@ -99,10 +97,11 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
      # 2. Tabbable element inside the content element
      # 3. The close button (has class "close")
      # 4. The dialog itself
-    _currentFocus = @get 'currentFocus'
+    currentFocus = $(document.activeElement)?[0]
     hasFocus = []
-    if _currentFocus?
-      hasFocus = [_currentFocus]
+    tabbableObjects = @$(":tabbable")
+    if _.findIndex(tabbableObjects, currentFocus) > -1
+      hasFocus = [currentFocus]
     else
       hasFocus = @$( "[autofocus]" )
     if hasFocus.length == 0
@@ -115,19 +114,16 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
         # while if we do not have any choice, the close button is chosen
         if hasFocus.length > 1
           hasFocus[1].focus()
-          @set 'currentFocus', hasFocus[1]
           return
       hasFocus[0].focus()
-      @set 'currentFocus', hasFocus[0]
 
   _keepFocus: (event) ->
     focusable = @$(':focusable')
     isActive = $.contains(@$()[0], event.target) and
       _.indexOf(focusable,event.target) > -1
     if not isActive
-      if event.target isnt @$()[0] or @get('enforceModality') == yes
-        event.preventDefault()
-        @_focusTabbable()
+      event.preventDefault()
+      @_focusTabbable()
 
   didInsertElement: ->
     @_super()
@@ -221,26 +217,21 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
         item == event.target
 
       # if there is no tabbable objects, set focus to the modal
-      if (tabbableObjects.length==0)
-        first = this
-        last = this
-      else
+      if (tabbableObjects.length > 0)
         first = tabbableObjects[0]
         last = tabbableObjects[tabbableObjects.length - 1]
-
-      # check the two ends of the array to make it the tab loop
-      if (event.target == last and not event.shiftKey)
-        first.focus()
-        @set 'currentFocus', first
-        event.preventDefault()
-      else if (event.target == first and event.shiftKey)
-        last.focus()
-        @set 'currentFocus', last
-        event.preventDefault()
+        # check the two ends of the array to make it the tab loop
+        if (event.target == last and not event.shiftKey)
+          first.focus()
+          event.preventDefault()
+        else if (event.target == first and event.shiftKey)
+          last.focus()
+          event.preventDefault()
+        else
+          @_super(event)
       else
-        if currentFocusIndex >= 0
-          @set 'currentFocus', tabbableObjects[currentFocusIndex + 1]
         @_super(event)
+
 
 Ember.Widgets.ModalComponent.reopenClass
   rootElement: '.ember-application'
