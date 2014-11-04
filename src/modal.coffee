@@ -111,14 +111,15 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       hasFocus = @$( "[autofocus]" )
     if hasFocus.length == 0
       hasFocus = @$( ":tabbable" )
-    # if hasFocus.length > 0
-    #   if hasFocus[0].className.indexOf("close") > -1
-    #     # if we have more than two tabbable objects, we do not want to tab to
-    #     # while if we do not have any choice, the close button is chosen
-    #     if hasFocus.length > 1
-    #       hasFocus[1].focus()
-    #       return
-    #   hasFocus[0].focus()
+    if hasFocus.length > 0
+      debugger
+      if hasFocus[0].className.indexOf("close") > -1
+        # if we have more than two tabbable objects, we do not want to tab to
+        # while if we do not have any choice, the close button is chosen
+        if hasFocus.length > 1
+          hasFocus[1].focus()
+          return
+      hasFocus[0].focus()
 
   _keepFocus: (event) ->
     focusable = @$(':focusable')
