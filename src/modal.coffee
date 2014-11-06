@@ -215,8 +215,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   # capture the TAB key and make a cycle tab loop among the tabbable elements
   # inside the modal. Remove the close button from the loop
   keyDown: (event) ->
-    if (event.keyCode != @KEY_CODES.TAB or event.isDefaultPrevented())
-      return
+    return if event.isDefaultPrevented()
 
     if event.keyCode == @KEY_CODES.ESC and @get 'escToCancel'
       @send 'sendCancel'
