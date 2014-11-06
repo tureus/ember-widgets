@@ -246,10 +246,6 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       else
         @_super(event)
 
-  focusIn: (event) ->
-    debugger
-    console.log("Focus is back")
-
 Ember.Widgets.ModalComponent.reopenClass
   rootElement: '.ember-application'
   poppedModal: null
