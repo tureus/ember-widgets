@@ -217,7 +217,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   keyDown: (event) ->
     return if event.isDefaultPrevented()
 
-    if event.keyCode == @KEY_CODES.ESC and @get 'escToCancel'
+    if event.keyCode == @KEY_CODES.ESCAPE and @get 'escToCancel'
       @send 'sendCancel'
     else if event.keyCode == @KEY_CODES.TAB
       tabbableObjects = @$(":tabbable")
@@ -246,9 +246,9 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       else
         @_super(event)
 
-focusIn: (event) ->
-  debugger
-  console.log("Focus is back")
+  focusIn: (event) ->
+    debugger
+    console.log("Focus is back")
 
 Ember.Widgets.ModalComponent.reopenClass
   rootElement: '.ember-application'
