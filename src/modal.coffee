@@ -8,7 +8,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   modalPaneBackdrop: '<div class="modal-backdrop"></div>'
   bodyElementSelector: '.modal-backdrop'
 
-  enforceModality:  no
+  enforceModality:  yes
   escToCancel:      yes
   backdrop:         yes
   isShowing:        no
@@ -93,6 +93,15 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       else @sendAction 'close'
       @hide()
 
+    showPopover: ->
+      popoverOptions =
+        container: this
+        title: 'Select Benchmark'
+        classNames: 'benchmark-chooser'
+        content:contentView
+
+      Ember.Widgets.PopoverComponent.popup popoverOptions
+        # rootElement: 'body'
   _focusTabbable: ->
      # Set focus to the first match:
      # 1. First element inside the dialog matching [autofocus]
