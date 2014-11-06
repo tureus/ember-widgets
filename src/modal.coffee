@@ -157,10 +157,10 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
     # remove backdrop
     @_backdrop.remove() if @_backdrop
 
-  keyHandler: Ember.computed ->
-    (event) =>
-      if event.which is 27 and @get('escToCancel') # ESC
-        @send 'sendCancel'
+  # keyHandler: Ember.computed ->
+  #   (event) =>
+  #     if event.which is 27 and @get('escToCancel') # ESC
+  #       @send 'sendCancel'
 
   click: (event) ->
     # debugger
@@ -204,7 +204,7 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
     unless @_hideHandler
       @_hideHandler = => @hide()
       $(document).on 'modal:hide', @_hideHandler
-    $(document).on 'keyup', @get('keyHandler')
+    # $(document).on 'keyup', @get('keyHandler')
 
   _removeDocumentHandlers: ->
     @_super()
@@ -217,9 +217,11 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
   keyDown: (event) ->
     if (event.keyCode != @KEY_CODES.TAB or event.isDefaultPrevented())
       return
-    if event.keyCode == @KEY_CODES.TAB
-      tabbableObjects = @$(":tabbable")
 
+    if event.keyCode == @KEY_CODES.ESC and @get 'escToCancel'
+      @send 'sendCancel'
+    else if event.keyCode == @KEY_CODES.TAB
+      tabbableObjects = @$(":tabbable")
       # remove close button out of tabbable objects list
       _.remove tabbableObjects, (item) ->
         item.className.indexOf("close") > -1
@@ -245,6 +247,9 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       else
         @_super(event)
 
+focusIn: (event) ->
+  debugger
+  console.log("Focus is back")
 
 Ember.Widgets.ModalComponent.reopenClass
   rootElement: '.ember-application'
