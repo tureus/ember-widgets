@@ -50,6 +50,7 @@ Ember.Widgets.BodyEventListener,
   bodyClick: -> @hide()
 
   hide: ->
+    debugger
     if parentView?
       parentView.focus()
     return if @get('isDestroyed')
