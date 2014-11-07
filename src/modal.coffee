@@ -93,14 +93,14 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.DomHelper
       else @sendAction 'close'
       @hide()
 
-    showPopover: ->
-      popoverOptions =
-        container: this
-        title: 'Select Benchmark'
-        classNames: 'benchmark-chooser'
-        content:contentView
+    # showPopover: ->
+    #   popoverOptions =
+    #     container: this
+    #     title: 'Select Benchmark'
+    #     classNames: 'benchmark-chooser'
+    #     content:contentView
 
-      Ember.Widgets.PopoverComponent.popup popoverOptions
+    #   Ember.Widgets.PopoverComponent.popup popoverOptions
         # rootElement: 'body'
   _focusTabbable: ->
      # Set focus to the first match:

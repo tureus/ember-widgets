@@ -9,6 +9,7 @@ Ember.Widgets.BodyEventListener,
   # The target element to anchor the popover to
   targetElement: null
   contentViewClass: null
+  parentView: null
 
   fade: yes
   escToCancel: yes
@@ -49,6 +50,8 @@ Ember.Widgets.BodyEventListener,
   bodyClick: -> @hide()
 
   hide: ->
+    if parentView?
+      parentView.focus()
     return if @get('isDestroyed')
     @set('isShowing', no)
     if @get('fade')
