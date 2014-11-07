@@ -6,14 +6,14 @@ Ember.Widgets.BodyEventListener,
   classNameBindings: ['isShowing:in', 'fade', 'placement']
   styleBindings: ['left', 'top', 'display', 'visibility']
 
-  # The target element to anchor the popover to
-  targetElement: null
-  contentViewClass: null
-
   # TODO (Thang): rootElement cannot be a view,
   # I don't find any good way now to set the focus back to the
   # previously focused element, so I add it here. Looking for a better fix
   focusBackElement: null
+
+  # The target element to anchor the popover to
+  targetElement: null
+  contentViewClass: null
 
   fade: yes
   escToCancel: yes
@@ -54,6 +54,7 @@ Ember.Widgets.BodyEventListener,
   bodyClick: -> @hide()
 
   hide: ->
+    debugger
     _focusBackElement = @get 'focusBackElement'
     if _focusBackElement?
       _focusBackElement.focus()
@@ -217,6 +218,7 @@ Ember.Widgets.BodyEventListener,
 Ember.Widgets.PopoverComponent = Ember.Component.extend(Ember.Widgets.PopoverMixin)
 
 Ember.Widgets.PopoverComponent.reopenClass
+
   rootElement: '.ember-application'
   hideAll: -> $(document).trigger('popover:hide')
 
@@ -224,10 +226,10 @@ Ember.Widgets.PopoverComponent.reopenClass
     @hideAll()
     rootElement = options.rootElement or @rootElement
     popover = this.create options
-    @set 'focusBackElement', options.focusBackElement
     if popover.get('targetObject.container')
       popover.set 'container', popover.get('targetObject.container')
     popover.appendTo rootElement
+    debugger
     popover
 
 Ember.Handlebars.helper('popover-component', Ember.Widgets.PopoverComponent)
