@@ -1,6 +1,6 @@
 Ember.Widgets.PopoverMixin =
 Ember.Mixin.create Ember.Widgets.StyleBindingsMixin,
-Ember.Widgets.BodyEventListener,
+Ember.Widgets.BodyEventListener, Ember.Widgets.TabbableModal, Ember.Widgets.DomHelper,
   layoutName: 'popover'
   classNames: ['popover']
   classNameBindings: ['isShowing:in', 'fade', 'placement']
@@ -45,6 +45,10 @@ Ember.Widgets.BodyEventListener,
 
   didInsertElement: ->
     @_super()
+    # Make sure that after the popover is rendered, set focus to the first
+    # tabbable element
+    Ember.run.schedule 'afterRender', this, ->
+      @_focusTabbable()
     # we want the view to render first and then we snap to position after
     # it is renered
     @snapToPosition()
@@ -54,7 +58,6 @@ Ember.Widgets.BodyEventListener,
   bodyClick: -> @hide()
 
   hide: ->
-    debugger
     _focusBackElement = @get 'focusBackElement'
     if _focusBackElement?
       _focusBackElement.focus()
@@ -67,6 +70,9 @@ Ember.Widgets.BodyEventListener,
         Ember.run this, @destroy
     else
       Ember.run this, @destroy
+
+  doCancelation: ->
+    @hide()
 
   ###
   Calculate the offset of the given iframe relative to the top window.
@@ -181,11 +187,6 @@ Ember.Widgets.BodyEventListener,
     if @get('top') < 0
       @set 'top', @get('marginTop')
 
-  keyHandler: Ember.computed ->
-    (event) =>
-      if event.which is 27 and @get('escToCancel') # ESC
-        @hide()
-
   # We need to put this in a computed because this is attached to the
   # resize and scroll events before snapToPosition is defined. We
   # throttle for 100 ms because that looks nice.
@@ -204,7 +205,6 @@ Ember.Widgets.BodyEventListener,
     unless @_scrollHandler
       @_scrollHandler = @get('debounceSnapToPosition')
       $(document).on 'scroll', @_scrollHandler
-    $(document).on 'keyup', @get('keyHandler')
 
   _removeDocumentHandlers: ->
     @_super()
@@ -229,7 +229,6 @@ Ember.Widgets.PopoverComponent.reopenClass
     if popover.get('targetObject.container')
       popover.set 'container', popover.get('targetObject.container')
     popover.appendTo rootElement
-    debugger
     popover
 
 Ember.Handlebars.helper('popover-component', Ember.Widgets.PopoverComponent)
