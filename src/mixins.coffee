@@ -70,10 +70,10 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
 
   _focusTabbable: ->
      # Set focus to the first match:
-     # 1. First element inside the dialog matching [autofocus]
-     # 2. Tabbable element inside the content element
-     # 3. The close button (has class "close")
-     # 4. The dialog itself
+     # 1. The saved focused element
+     # 2. First element inside the dialog matching [autofocus]
+     # 3. Tabbable element inside the content element
+     # 4. The close button (has class "close")
     hasFocus = [@get 'currentFocus']
     if hasFocus == null or not $.contains(@$()[0], hasFocus[0])
       hasFocus = @$( "[autofocus]" )
@@ -100,13 +100,6 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
       @set 'currentFocus',tabbableObjects[index+1]
     else
       @_focusTabbable()
-
-  _keepFocus: (event) ->
-    focusable = @$(':focusable')
-    isActive = $.contains(@$()[0], event.target)
-    if not isActive
-      event.preventDefault()
-    @_focusTabbable()
 
   click: (event) ->
     # debugger
@@ -135,7 +128,8 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
         if tabbableObjects[index].className.indexOf("close") > -1
           _index = index
           break
-      tabbableObjects.splice( _index, 1 );
+      if _index > -1
+        tabbableObjects.splice( _index, 1 );
 
       _currentFocus = $(document.activeElement)?[0]
 
