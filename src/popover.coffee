@@ -58,9 +58,9 @@ Ember.Widgets.BodyEventListener, Ember.Widgets.TabbableModal, Ember.Widgets.DomH
   bodyClick: -> @hide()
 
   hide: ->
-    _focusBackElement = @get 'focusBackElement'
-    if _focusBackElement?
-      _focusBackElement.focus()
+    _focusBackElement = @get 'targetElement'
+    if _focusBackElement? and _focusBackElement.length > 0
+      _focusBackElement[0].focus()
     return if @get('isDestroyed')
     @set('isShowing', no)
     if @get('fade')

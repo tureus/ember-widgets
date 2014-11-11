@@ -66,6 +66,7 @@ Ember.Widgets.BodyEventListener = Ember.Mixin.create
     @_clickHandler = null
 
 Ember.Widgets.TabbableModal = Ember.Mixin.create
+  currentFocus: null
 
   _focusTabbable: ->
      # Set focus to the first match:
@@ -73,7 +74,9 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
      # 2. Tabbable element inside the content element
      # 3. The close button (has class "close")
      # 4. The dialog itself
-    hasFocus = @$( "[autofocus]" )
+    hasFocus = [@get 'currentFocus']
+    if hasFocus == null or not $.contains(@$()[0], hasFocus[0])
+      hasFocus = @$( "[autofocus]" )
     if hasFocus.length == 0
       hasFocus = @$( ":tabbable" )
     if hasFocus.length > 0
@@ -82,8 +85,21 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
         # while if we do not have any choice, the close button is chosen
         if hasFocus.length > 1
           hasFocus[1].focus()
+          @set 'currentFocus', hasFocus[1]
           return
       hasFocus[0].focus()
+      @set 'currentFocus', hasFocus[0]
+
+  _focusNextTabbableElement: (element) ->
+    # Set focus to the next tabble element, it is useful for continous deleting
+    # elements from a list from keyboard without having to use mouse
+    tabbableObjects = @$(":tabbable")
+    index = $.inArray(element, tabbableObjects)
+    if index > -1 and index+1 < tabbableObjects.length
+      tabbableObjects[index+1].focus()
+      @set 'currentFocus',tabbableObjects[index+1]
+    else
+      @_focusTabbable()
 
   _keepFocus: (event) ->
     focusable = @$(':focusable')
@@ -99,7 +115,7 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     # _currentFocus = $(document.activeElement)[0]
     if modality? and modality == no and not isActive
       @hide() unless @get('enforceModality')
-    else if not isActive or $.inArray(event.target, @$(':focusable'))==-1
+    else if not isActive or $.inArray(event.target, @$(':focusable')) == -1
       @_focusTabbable()
 
   # capture the TAB key and make a cycle tab loop among the tabbable elements
@@ -114,14 +130,18 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     else if event.keyCode == @KEY_CODES.TAB
       tabbableObjects = @$(":tabbable")
       # remove close button out of tabbable objects list
-      _.remove tabbableObjects, (item) ->
-        item.className.indexOf("close") > -1
+      _index = -1
+      for index in [0..tabbableObjects.length-1] by 1
+        if tabbableObjects[index].className.indexOf("close") > -1
+          _index = index
+          break
+      tabbableObjects.splice( _index, 1 );
 
       _currentFocus = $(document.activeElement)?[0]
 
-      if $.inArray(_currentFocus, tabbableObjects) == -1
+      _index = $.inArray(_currentFocus, tabbableObjects)
+      if _index == -1
         @_focusTabbable()
-
       # if there is no tabbable objects, set focus to the modal
       if (tabbableObjects.length > 0)
         first = tabbableObjects[0]
@@ -129,13 +149,11 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
         # check the two ends of the array to make it the tab loop
         if (event.target == last and not event.shiftKey)
           first.focus()
+          @set 'currentFocus', first
           event.preventDefault()
         else if (event.target == first and event.shiftKey)
+          @set 'currentFocus', last
           last.focus()
           event.preventDefault()
         else
-          @_super(event)
-      else
-        @_super(event)
-    else
-      @_super(event)
+          @set 'currentFocus', tabbableObjects[_index+1]
