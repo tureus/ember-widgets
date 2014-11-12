@@ -6,6 +6,7 @@
 -------------------------------------------------- */
 // Note: Important that this is synchronized with the list-view rowHeight
 @rowHeight: 26px;
+@input-border-focus: #66afe9;
 
 /* List View - Note: Required for list-view to work
 -------------------------------------------------- */
@@ -23,6 +24,15 @@
   position: relative;
   display: inline-block;
   outline: none;
+
+  &:active,
+  &:focus {
+    .ember-select-container {
+      border: 1px solid @input-border-focus;
+      background-color: transparent;
+      color: @input-border-focus;
+    }
+  }
 }
 
 .ember-select-choice i {

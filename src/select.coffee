@@ -67,7 +67,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   # we need to set tabindex so that div responds to key events
   highlightedIndex: -1
 
-  tabindex: -1
+  tabindex: 0
 
   showDropdown: no
 
@@ -296,6 +296,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     13: 'enterPressed'
     38: 'upArrowPressed'
     40: 'downArrowPressed'
+    9:  'tabPressed'
 
   # All the selectable options - namely everything except for the non-group
   # options that are artificially created.
@@ -323,7 +324,9 @@ Ember.AddeparMixins.ResizeHandlerMixin,
 
   keyDown: (event) ->
     # show dropdown if dropdown is not already showing
-    return @set('showDropdown', yes) unless @get 'showDropdown'
+    # and the keydown is not a TAB key
+    if event.keyCode isnt 9 and not @get 'showDropdown'
+      return @set('showDropdown', yes)
     map   = @get 'KEY_EVENTS'
     method = map[event.keyCode]
     @get(method)?.apply(this, arguments) if method
@@ -331,6 +334,12 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   deletePressed: Ember.K
 
   escapePressed: (event) ->
+    @send 'hideDropdown'
+    @$()[0].focus()
+    event.stopPropagation()
+    event.preventDefault()
+
+  tabPressed: (event) ->
     @send 'hideDropdown'
 
   enterPressed: (event) ->
@@ -340,6 +349,7 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     # in case dropdown doesn't close
     @send 'hideDropdown'
     # TODO(Peter): HACK the web app somehow reloads when enter is pressed.
+    event.stopPropagation()
     event.preventDefault()
 
   upArrowPressed: (event) ->

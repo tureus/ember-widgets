@@ -68,6 +68,9 @@ Ember.Widgets.BodyEventListener = Ember.Mixin.create
 Ember.Widgets.TabbableModal = Ember.Mixin.create
   currentFocus: null
 
+  _clearCurrentFocus: ->
+    @set 'currentFocus', null
+
   _focusTabbable: ->
      # Set focus to the first match:
      # 1. The saved focused element
