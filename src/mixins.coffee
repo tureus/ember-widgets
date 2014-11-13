@@ -81,8 +81,6 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     if hasFocus[0] == null or not $.contains(@$()[0], hasFocus[0])
       hasFocus = @$( "[autofocus]" )
     if hasFocus.length == 0
-      hasFocus = @$('input')
-    if hasFocus.length == 0
       hasFocus = @$( ":tabbable" )
     if hasFocus.length > 0
       if hasFocus[0].className.indexOf("close") > -1
@@ -106,6 +104,12 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     else
       @_focusTabbable()
 
+  _checkContainingElement: (containers, element) ->
+    for containerItem in containers
+      if containerItem is element or $.contains(containerItem, element)
+        return yes
+    return no
+
   click: (event) ->
     # debugger
     modality = @get 'enforceModality'
@@ -113,7 +117,7 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     # _currentFocus = $(document.activeElement)[0]
     if modality? and modality == no and not isActive
       @hide() unless @get('enforceModality')
-    else if not isActive or $.inArray(event.target, @$(':focusable')) == -1
+    else if not isActive or not @_checkContainingElement(@$(':focusable'), event.target)
       @_focusTabbable()
 
   # capture the TAB key and make a cycle tab loop among the tabbable elements

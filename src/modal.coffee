@@ -155,13 +155,11 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.TabbableM
     unless @_hideHandler
       @_hideHandler = => @hide()
       $(document).on 'modal:hide', @_hideHandler
-    # $(document).on 'keyup', @get('keyHandler')
 
   _removeDocumentHandlers: ->
     @_super()
     $(document).off 'modal:hide', @_hideHandler
     @_hideHandler = null
-    $(document).off 'keyup', @get('keyHandler')
 
 Ember.Widgets.ModalComponent.reopenClass
   rootElement: '.ember-application'
