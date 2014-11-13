@@ -78,8 +78,10 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
      # 3. Tabbable element inside the content element
      # 4. The close button (has class "close")
     hasFocus = [@get 'currentFocus']
-    if hasFocus == null or not $.contains(@$()[0], hasFocus[0])
+    if hasFocus[0] == null or not $.contains(@$()[0], hasFocus[0])
       hasFocus = @$( "[autofocus]" )
+    if hasFocus.length == 0
+      hasFocus = @$('input')
     if hasFocus.length == 0
       hasFocus = @$( ":tabbable" )
     if hasFocus.length > 0
@@ -122,7 +124,6 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     if event.keyCode == @KEY_CODES.ESCAPE and @get 'escToCancel'
       @doCancelation()
       event.preventDefault()
-      event.stopPropagation()
     else if event.keyCode == @KEY_CODES.TAB
       tabbableObjects = @$(":tabbable")
       # remove close button out of tabbable objects list

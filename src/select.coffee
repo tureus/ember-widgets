@@ -54,7 +54,7 @@ Ember.Widgets.SelectOptionView = Ember.ListItemView.extend
 
 Ember.Widgets.SelectComponent =
 Ember.Component.extend Ember.Widgets.BodyEventListener,
-Ember.AddeparMixins.ResizeHandlerMixin,
+Ember.AddeparMixins.ResizeHandlerMixin, Ember.Widgets.DomHelper,
   layoutName:         'select'
   classNames:         'ember-select'
   attributeBindings:  Ember.A ['tabindex']
@@ -309,8 +309,8 @@ Ember.AddeparMixins.ResizeHandlerMixin,
 
   # The option that is currently highlighted.
   highlighted: Ember.computed (key, value) ->
-    content   = @get('selectableOptions') or Ember.A []
-    value     = value or Ember.A []
+    content   = @get('selectableOptions') or Ember.A()
+    value     = value or Ember.A()
     if arguments.length is 1 # getter
       index = @get 'highlightedIndex'
       value = content.objectAt index
@@ -325,8 +325,8 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   keyDown: (event) ->
     # show dropdown if dropdown is not already showing
     # and the keydown is not a TAB key
-    if event.keyCode isnt 9 and not @get 'showDropdown'
-      return @set('showDropdown', yes)
+    if event.keyCode in [@KEY_CODES.ENTER, @KEY_CODES.SPACEBAR, @KEY_CODES.DOWN, @KEY_CODES.UP]
+      return @set('showDropdown', yes) if not @get 'showDropdown'
     map   = @get 'KEY_EVENTS'
     method = map[event.keyCode]
     @get(method)?.apply(this, arguments) if method
@@ -334,10 +334,10 @@ Ember.AddeparMixins.ResizeHandlerMixin,
   deletePressed: Ember.K
 
   escapePressed: (event) ->
-    @send 'hideDropdown'
-    @$()[0].focus()
-    event.stopPropagation()
-    event.preventDefault()
+    if @get('showDropdown') is yes
+      @send 'hideDropdown'
+      @$()[0].focus()
+      event.preventDefault()
 
   tabPressed: (event) ->
     @send 'hideDropdown'
@@ -348,8 +348,8 @@ Ember.AddeparMixins.ResizeHandlerMixin,
     @userDidSelect(item) unless Ember.isEmpty(item)
     # in case dropdown doesn't close
     @send 'hideDropdown'
+    @$()[0].focus()
     # TODO(Peter): HACK the web app somehow reloads when enter is pressed.
-    event.stopPropagation()
     event.preventDefault()
 
   upArrowPressed: (event) ->
