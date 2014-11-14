@@ -129,15 +129,11 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
       @doCancelation()
       event.preventDefault()
     else if event.keyCode == @KEY_CODES.TAB
-      tabbableObjects = @$(":tabbable")
+      allTabbableObjects = @$(":tabbable")
+
       # remove close button out of tabbable objects list
-      _index = -1
-      for index in [0..tabbableObjects.length-1] by 1
-        if tabbableObjects[index].className.indexOf("close") > -1
-          _index = index
-          break
-      if _index > -1
-        tabbableObjects.splice( _index, 1 );
+      tabbableObjects = allTabbableObjects.filter (index) ->
+        return allTabbableObjects[index]?.className.indexOf("close") == -1
 
       _currentFocus = $(document.activeElement)?[0]
 

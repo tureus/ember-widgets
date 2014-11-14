@@ -24,6 +24,8 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.TabbableM
   cancel: Ember.K
   close: Ember.K
 
+  isNotValid: Ember.computed.not('isValid')
+
   headerViewClass: Ember.View.extend
     templateName: 'modal_header'
 
