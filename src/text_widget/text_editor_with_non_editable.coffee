@@ -25,19 +25,12 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
   showConfigPopover: false
   selectedPillOption: null
 
-  _getPillFromElement: (pillElement) ->
-    # Deserialize the pillElement into a pill object
-    data = $(pillElement).data()
-    return unless data.type
-    params = {}
-    for key, value of data
-      params[key] = value
-    Ember.get(data.type).create({'textEditor': this, 'params': params})
-
   _getElementFromPill: (pill) ->
     pillId = pill.get('params.pillId')
     @getEditor().find('.non-editable[data-pill-id="' + pillId + '"]')
 
+  # gets the html representation of the editor and removes the content
+  # of its non-editable pill components
   serialize: ->
     raw_html = @getEditor().html()
     div = $('<div/>').html(raw_html)
@@ -50,6 +43,15 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
       pill = @_getPillFromElement(pillElement)
       return unless pill
       $(pillElement).text(pill.result())
+
+  _getPillFromElement: (pillElement) ->
+    # Deserialize the pillElement into a pill object
+    data = $(pillElement).data()
+    return unless data.type
+    params = {}
+    for key, value of data
+      params[key] = value
+    Ember.get(data.type).create({'textEditor': this, 'params': params})
 
   _getCurrentCaretContainer: (range) ->
     return $(range?.startContainer.parentElement).closest('.non-editable-caret')
