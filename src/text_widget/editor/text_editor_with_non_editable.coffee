@@ -1,5 +1,5 @@
 Ember.Widgets.TextEditorWithNonEditableComponent =
-Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.PillInsertMixin,
+Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
   layoutName: 'text-editor-with-non-editable'
 
   ##############################################################################
@@ -59,13 +59,10 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
   getNewPillId: ->
     @incrementProperty 'pillId'
 
-  updatePill: (pill) ->
-    # TODO: allow updating pill params
-    pillElement = @_getElementFromPill(pill)
-    $(pillElement).text(pill.result())
+  updatePill: (pill) -> pill.update()
 
   insertPill: (pill) ->
-    precedingCharacters = @getCharactersPrecedingCaret(this.getEditor()[0])
+    precedingCharacters = @getCharactersPrecedingCaret(@getEditor()[0])
     matches = precedingCharacters.match @get('insertPillRegex')
     if matches
       # Inserting via key, so we need to replace the characters before
@@ -78,7 +75,7 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
         @selectElement(@getOrCreateLastElementInEditor())
       range = @getCurrentRange()
 
-    existingNonEditable = this._getNonEditableParent(range.startContainer) || this._getNonEditableParent(range.endContainer)
+    existingNonEditable = @_getNonEditableParent(range.startContainer) || @_getNonEditableParent(range.endContainer)
     existingNonEditable?.remove()
     factor = @insertElementAtRange(range, pill.render())
     caretContainer = @_insertCaretContainer(factor, false)
@@ -157,7 +154,7 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
       return $(caretContainer.parentElement).html('<br>')  # chrome specific
     if (child = caretContainer.childNodes[0]) && child.nodeValue.charAt(0) == @INVISIBLE_CHAR
       child = child.deleteData(0, 1)
-    savedSelection = rangy.saveSelection(@$('iframe.text-editor-frame')[0].contentWindow)
+    savedSelection = rangy.saveSelection(@_getIframe().contentWindow)
     contents = $(caretContainer).contents()
     $(caretContainer).replaceWith(contents)
     rangy.restoreSelection(savedSelection)
@@ -239,7 +236,7 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
   _handlePillConfig: ->
     # Show or hide the pill config component depending on the characters
     # preceding the cursor
-    precedingCharacters = @getCharactersPrecedingCaret(this.getEditor()[0])
+    precedingCharacters = @getCharactersPrecedingCaret(@getEditor()[0])
     matches = precedingCharacters.match @get('insertPillRegex')
     if matches
       query = matches[0].split(" ").reverse()[0].slice(1)
@@ -325,7 +322,7 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.DomHelper, Ember.Widgets.
     # This can only happen on mouse up and key up so that font style selections
     # are saved
     $editor = @getEditor()
-    savedSelection = rangy.saveSelection(@$('iframe.text-editor-frame')[0].contentWindow)
+    savedSelection = rangy.saveSelection(@_getIframe().contentWindow)
     contents = $editor.contents()
     @wrapInDiv(contents)
     rangy.restoreSelection(savedSelection)

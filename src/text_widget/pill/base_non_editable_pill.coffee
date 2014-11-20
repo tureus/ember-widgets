@@ -19,6 +19,9 @@ Ember.Widgets.BaseNonEditablePill = Ember.Controller.extend Ember.Widgets.DomHel
   configure: ->
     @send 'modalConfirm'  # No configuration by default
 
+  update: ->
+    $(@_getElement()).text(@result())
+
   ##############################################################################
 
   actions:
@@ -47,4 +50,12 @@ Ember.Widgets.BaseNonEditablePill = Ember.Controller.extend Ember.Widgets.DomHel
     @set 'pillElement', span
     @updateContent(span)
     return span[0]
+
+  ##############################################################################
+  # Private Methods
+  ##############################################################################
+
+  _getElement: ->
+    pillId = @get('params.pillId')
+    @get('textEditor').getEditor().find(".non-editable[data-pill-id='#{pillId}']")
 

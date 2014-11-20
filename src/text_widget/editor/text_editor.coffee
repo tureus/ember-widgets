@@ -1,4 +1,4 @@
-Ember.Widgets.TextEditorComponent = Ember.Component.extend
+Ember.Widgets.TextEditorComponent = Ember.Component.extend Ember.Widgets.DomHelper, 
   layoutName: 'text-editor'
   selectedFontName: 'Helvetica Neue'
   selectedFontSize: '2'
@@ -70,7 +70,7 @@ Ember.Widgets.TextEditorComponent = Ember.Component.extend
     @$('iframe.text-editor-frame').contents().find('.' + @EDITOR_CLASS)
 
   getDocument: ->
-    iframe = @$('iframe.text-editor-frame')[0]
+    iframe = @_getIframe()
     iframe.contentDocument || iframe.contentWindow.document
 
   # Returns true if the entire range is in the text editor
