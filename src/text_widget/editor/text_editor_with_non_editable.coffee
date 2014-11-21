@@ -244,6 +244,23 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     else
       @_hidePillConfig()
 
+  keyDown: (event) ->
+    return unless @isTargetInEditor(event)
+
+    keyCode = event.keyCode
+
+    if @showConfigPopover
+      insertSelect = @getInsertSelectController()
+      if keyCode == @KEY_CODES.DOWN
+        return insertSelect.downArrowPressed(event)
+      else if keyCode == @KEY_CODES.UP
+        return insertSelect.upArrowPressed(event)
+      else if keyCode in [@KEY_CODES.ENTER, @KEY_CODES.TAB] and insertSelect.get('preparedContent').length > 0
+        return insertSelect.enterPressed(event)
+      else if keyCode == @KEY_CODES.ESCAPE
+        return insertSelect.escapePressed(event)
+
+    @_moveSelection()
 
   _wrapText: ->
     # move things around so that all text are within divs
@@ -255,6 +272,14 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     @wrapInDiv(contents)
     rangy.restoreSelection(savedSelection)
 
+  keyUp: (event) ->
+    return unless @isTargetInEditor(event)
+    @_moveSelection()
+    @_wrapText()
+
+    unless event.keyCode == @KEY_CODES.ESCAPE
+      @_handlePillConfig()
+      @_super()
 
   mouseDown: (event) ->
     return unless @isTargetInEditor(event)
