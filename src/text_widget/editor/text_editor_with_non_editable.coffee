@@ -43,7 +43,10 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
       pill = @_getPillFromElement(pillElement)
       return unless pill
       $(pillElement).text(pill.result())
-      pill.render()
+
+      # have to make sure to set the contenteditable to false because we
+      # don't serialize this stuff properly
+      $(pillElement).attr('contenteditable': "false")
 
   _getPillFromElement: (pillElement) ->
     # Deserialize the pillElement into a pill object
