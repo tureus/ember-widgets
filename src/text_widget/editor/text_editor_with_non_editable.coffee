@@ -244,78 +244,6 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     else
       @_hidePillConfig()
 
-  keyDown: (event) ->
-    return unless @isTargetInEditor(event)
-
-    handleLeftNodeCase = =>
-      if leftNode
-        if keyCode == @KEY_CODES.LEFT and isCollapsed
-          @selectElement(leftNode, "none")
-          event.preventDefault()
-        else if keyCode == @KEY_CODES.BACKSPACE
-          @selectElement(leftNode, "none")
-      else if leftNodeDeep and keyCode == @KEY_CODES.BACKSPACE
-        # This happens when the last node on the previous line is a non-editable
-        @_insertCaretContainer(leftNodeDeep, false)
-
-    handleRightNodeCase = =>
-      if rightNode
-        if keyCode == @KEY_CODES.DELETE
-          @selectElement(rightNode, "none")
-        else if keyCode == @KEY_CODES.RIGHT and isCollapsed
-          @selectElement(rightNode, "none")
-          event.preventDefault()
-      else if rightNodeDeep and keyCode == @KEY_CODES.DELETE and not rightNode
-        # This happens when the first node on the next line is a non-editable
-        @_insertCaretContainer(rightNodeDeep, true)
-
-    isCharacter = (keyCode) ->
-      return keyCode >= 48 && keyCode <= 90 or   # [0-9a-z]
-             keyCode >= 96 && keyCode <= 111 or  # num pad characters
-             keyCode >= 186 && keyCode <= 222    # punctuation
-
-    keyCode = event.keyCode
-
-    if @showConfigPopover
-      insertSelect = @getInsertSelectController()
-      if keyCode == @KEY_CODES.DOWN
-        return insertSelect.downArrowPressed(event)
-      else if keyCode == @KEY_CODES.UP
-        return insertSelect.upArrowPressed(event)
-      else if keyCode in [@KEY_CODES.ENTER, @KEY_CODES.TAB] and insertSelect.get('preparedContent').length > 0
-        return insertSelect.enterPressed(event)
-      else if keyCode == @KEY_CODES.ESCAPE
-        return insertSelect.escapePressed(event)
-
-    @_moveSelection()
-    range = @getCurrentRange()
-    isCollapsed = range.collapsed
-
-    startElement = range.startContainer
-    endElement = range.endContainer
-    nonEditableParent = @_isNonEditable(startElement) || @_isNonEditable(endElement)
-    leftNode = @_getNonEditableOnLeft()
-    rightNode = @_getNonEditableOnRight()
-    leftNodeDeep = @_getNonEditableOnLeft(true)
-    rightNodeDeep = @_getNonEditableOnRight(true)
-
-    if (event.metaKey || event.ctrlKey) && keyCode not in [@KEY_CODES.DELETE, @KEY_CODES.BACKSPACE]
-      return
-
-    if isCharacter(keyCode) or keyCode == @KEY_CODES.BACKSPACE or keyCode == @KEY_CODES.DELETE
-      if (leftNode || rightNode) and !isCollapsed
-        caret = @_insertCaretContainer(leftNode || rightNode, if leftNode then false else true)
-        @deleteRange(range)
-        @selectElement(caret)
-      else if nonEditableParent
-        @deleteRange(range)  # special delete in case a non-editable is selected
-
-      if (keyCode == @KEY_CODES.BACKSPACE || keyCode == @KEY_CODES.DELETE) && !isCollapsed && nonEditableParent
-        # We already performed the delete action
-        return event.preventDefault()
-
-    handleLeftNodeCase()
-    handleRightNodeCase()
 
   _wrapText: ->
     # move things around so that all text are within divs
@@ -327,14 +255,6 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     @wrapInDiv(contents)
     rangy.restoreSelection(savedSelection)
 
-  keyUp: (event) ->
-    return unless @isTargetInEditor(event)
-    @_moveSelection()
-    @_wrapText()
-
-    unless event.keyCode == @KEY_CODES.ESCAPE
-      @_handlePillConfig()
-      @_super()
 
   mouseDown: (event) ->
     return unless @isTargetInEditor(event)

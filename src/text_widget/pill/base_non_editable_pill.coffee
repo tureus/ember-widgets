@@ -44,6 +44,7 @@ Ember.Widgets.BaseNonEditablePill = Ember.Controller.extend Ember.Widgets.DomHel
     span = @createElementsFromString("<span></span>")
     span.addClass('non-editable')
     span.attr('title': @get('name'))
+    span.attr('contenteditable': "false")
     # include all params as data-attributes
     for key, value of @get('params')
       span.attr('data-' + Ember.String.dasherize(key), value)
