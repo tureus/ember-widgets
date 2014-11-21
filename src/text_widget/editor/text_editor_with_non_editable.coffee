@@ -43,6 +43,7 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
       pill = @_getPillFromElement(pillElement)
       return unless pill
       $(pillElement).text(pill.result())
+      pill.render()
 
   _getPillFromElement: (pillElement) ->
     # Deserialize the pillElement into a pill object
