@@ -25,6 +25,7 @@ App.Router.map ->
     @route 'modal'
     @route 'popover'
     @route 'select'
+    @route 'textEditor'
     @route 'colorPicker'
     @route 'radioButton'
 
