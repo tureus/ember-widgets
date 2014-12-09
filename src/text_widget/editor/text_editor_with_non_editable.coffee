@@ -57,9 +57,6 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
       params[key] = value
     Ember.get(data.type).create({'textEditor': this, 'params': params})
 
-  _getCurrentCaretContainer: (range) ->
-    return $(range?.startContainer.parentElement).closest('.non-editable-caret')
-
   getNewPillId: ->
     @incrementProperty 'pillId'
 
@@ -71,6 +68,7 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     if matches
       # Inserting via key, so we need to replace the characters before
       @deleteCharactersPrecedingCaret(matches[0].length, false)
+
     # Ensure that we insert the factor in the text editor (move the range inside the editor if
     # not already)
     range = @getCurrentRange()
@@ -82,12 +80,6 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     existingNonEditable = @_getNonEditableParent(range.startContainer) || @_getNonEditableParent(range.endContainer)
     existingNonEditable?.remove()
     factor = @insertElementAtRange(range, pill.render())
-    caretContainer = @_insertCaretContainer(factor, false)
-
-    # Set cursor to the end of the caret container just created
-    @selectElement(caretContainer)
-    # Remove other caret containers, excluding the one we just selected
-    @_removeCaretContainers()
 
     # Move cursor
     @_moveSelection()
@@ -97,7 +89,6 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
 
     # select the caret container again (which has probably been moved)
     @getEditor().focus()
-    @selectElement(factor.nextSibling)
 
   _isNonEditable: (node) ->
     not Ember.isEmpty($(node).closest('.non-editable'))
@@ -140,92 +131,12 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
         return node
       node = node.parentElement
 
-  # Inserts a "caret container" next to the target node
-  # Used to allow users to type next to a non-editable element (i.e. the non editable pill).
-  # Otherwise when the user tries to type text preceding or following a non-editable element, the
-  # text will appear in the non-editable element. The caret container gives us a place to
-  # temporarily put the cursor.
-  _insertCaretContainer: (target, before) ->
-    caretContainer = @createElementsFromString('<span class="non-editable-caret">' + @INVISIBLE_CHAR + '</span>')[0]
-    if (before)
-      $(caretContainer).insertBefore(target)
-    else
-      $(caretContainer).insertAfter(target)
-    return caretContainer
-
-  _removeCaretContainer: (caretContainer) ->
-    if caretContainer.parentElement.innerHTML == '<span class="non-editable-caret">' + @INVISIBLE_CHAR + '</span>'
-      return $(caretContainer.parentElement).html('<br>')  # chrome specific
-    if (child = caretContainer.childNodes[0]) && child.nodeValue.charAt(0) == @INVISIBLE_CHAR
-      child = child.deleteData(0, 1)
-    savedSelection = rangy.saveSelection(@_getIframe().contentWindow)
-    contents = $(caretContainer).contents()
-    $(caretContainer).replaceWith(contents)
-    rangy.restoreSelection(savedSelection)
-
-  _removeCaretContainers: ->
-    range = @getCurrentRange()
-    currentCaretContainer = @_getCurrentCaretContainer(range)
-    while (caretContainer = @getEditor().find('.non-editable-caret').not(currentCaretContainer)[0])
-      if caretContainer.parentElement.innerHTML == '<span class="non-editable-caret">' + @INVISIBLE_CHAR + '</span>'
-        $(caretContainer.parentElement).html('<br>')  # chrome specific
-        continue
-      child = caretContainer.childNodes[0]
-      if child && child.nodeValue?.charAt(0) == @INVISIBLE_CHAR
-        child = child.deleteData(0, 1)
-      # via http://stackoverflow.com/questions/170004/how-to-remove-only-the-parent-element-and-not-its-child-elements-in-javascript
-      contents = $(caretContainer).contents()
-      $(caretContainer).replaceWith(contents)
-      caretContainer.childNodes[caretContainer.childNodes.length-1]
-
   _moveSelection: ->
-    # Move the cursor (selection) to a non editable caret if a pill has just
-    # been inserted, remove non editable carets as needed, and expand selection
-    # to the entire pill if selected.
-    hasSideContent = (range, element, left) ->
-      container = range.startContainer
-      offset = range.startOffset
-
-      if container.nodeType == 3  # i.e. TEXT_NODE (see https://developer.mozilla.org/en-US/docs/Web/API/Node.nodeType)
-        len = container.nodeValue.length
-        if (offset > 0 && offset < len) || (if left then offset == len else offset == 0)
-          return
-      return element
-
-    @_removeCaretContainers()
     return unless currentRange = @getCurrentRange()
 
     isCollapsed = currentRange.collapsed
     nonEditableStart = @_getNonEditableParent(currentRange.startContainer)
     nonEditableEnd = @_getNonEditableParent(currentRange.endContainer)
-    parentCaret = @_getCurrentCaretContainer(currentRange)
-
-    if nonEditableStart || nonEditableEnd
-      if currentRange.collapsed
-        if (element = hasSideContent(currentRange, nonEditableStart || nonEditableEnd, true))
-          caretContainer = @_insertCaretContainer(element, true)
-        else if (element = hasSideContent(currentRange, nonEditableStart || nonEditableEnd, false))
-          caretContainer = @_insertCaretContainer(element, false)
-
-        if caretContainer
-          # place cursor at end of caret unless the caret is the first child
-          collapse = if $(caretContainer).is(":first-child") then "beginning" else "end"
-          @selectElement(caretContainer, collapse)
-          return
-
-      # We are in the middle of a non editable (either collapsed or not). Select the entire non-
-      # editable if part is selected. This includes the case where multiple non-editables and
-      # parts are selected.
-      if nonEditableStart
-        currentRange.setStartBefore(nonEditableStart)
-      if nonEditableEnd
-        currentRange.setEndAfter(nonEditableEnd)
-      selection = window.getSelection()
-      selection.removeAllRanges()
-      selection.addRange(currentRange)
-    else if parentCaret?.length > 0 and !@_isNonEditable(@getNonEmptySideNode(currentRange, true)) and
-    !@_isNonEditable(@getNonEmptySideNode(currentRange, false))
-      @_removeCaretContainer(parentCaret[0])
 
   _showPillConfig: (query) ->
     @set 'showConfigPopover', true
@@ -296,9 +207,10 @@ Ember.Widgets.TextEditorComponent.extend Ember.Widgets.PillInsertMixin,
     @_wrapText()
 
     currentRange = @getCurrentRange()
-    if @_isNonEditable(event.target) and event.target == @mouseDownTarget and @_isRangeWithinNonEditable(currentRange)
+    if @_isNonEditable(event.target) and @_isRangeWithinNonEditable(currentRange)
       # This prevents the user from putting the cursor within a non-editable that was previously selected
-      @selectElement(event.target, "none")
+      @selectElement(event.target, "none") 
+      console.log(window.getSelection())
       event.preventDefault()
     @_super()
 
