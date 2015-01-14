@@ -25,6 +25,8 @@ Ember.Widgets.DomHelper, Ember.Widgets.TabbableModal,
   cancel: Ember.K
   close: Ember.K
 
+  isDisabled: Ember.computed.not('isValid')
+
   fadeEnabled: Ember.computed ->
     return false if Ember.Widgets.DISABLE_ANIMATIONS
     @get('fade')
