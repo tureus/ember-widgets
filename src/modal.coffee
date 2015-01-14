@@ -1,5 +1,6 @@
 Ember.Widgets.ModalComponent =
-Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.TabbableModal, Ember.Widgets.DomHelper,
+Ember.Component.extend Ember.Widgets.StyleBindingsMixin,
+Ember.Widgets.DomHelper, Ember.Widgets.TabbableModal,
   layoutName: 'modal'
   classNames: ['modal']
   classNameBindings: ['isShowing:in', 'hasCloseButton::has-no-close-button', 'fadeEnabled:fade']
@@ -20,14 +21,14 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.TabbableM
   size:             "normal"
   isValid:          true
 
+  confirm: Ember.K
+  cancel: Ember.K
+  close: Ember.K
+
   fadeEnabled: Ember.computed ->
     return false if Ember.Widgets.DISABLE_ANIMATIONS
     @get('fade')
   .property 'fade'
-
-  confirm: Ember.K
-  cancel: Ember.K
-  close: Ember.K
 
   headerViewClass: Ember.View.extend
     templateName: 'modal_header'
@@ -119,10 +120,6 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.TabbableM
     # remove backdrop
     @_backdrop.remove() if @_backdrop
 
-  click: (event) ->
-    return unless event.target is event.currentTarget
-    @send 'sendCancel' unless @get('enforceModality')
-
   hide: ->
     @set 'isShowing', no
     # bootstrap modal removes this class from the body when the modal closes
@@ -137,6 +134,9 @@ Ember.Component.extend Ember.Widgets.StyleBindingsMixin, Ember.Widgets.TabbableM
       @$().one $.support.transition.end, => Ember.run this, @destroy
     else
       Ember.run this, @destroy
+
+  doCancelation: ->
+    @send 'sendCancel'
 
   _appendBackdrop: ->
     parentLayer = @$().parent()

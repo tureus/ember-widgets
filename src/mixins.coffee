@@ -68,9 +68,6 @@ Ember.Widgets.BodyEventListener = Ember.Mixin.create
 Ember.Widgets.TabbableModal = Ember.Mixin.create
   currentFocus: null
 
-  _clearCurrentFocus: ->
-    @set 'currentFocus', null
-
   _focusTabbable: ->
      # Set focus to the first match:
      # 1. The saved focused element
@@ -93,17 +90,6 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
       hasFocus[0].focus()
       @set 'currentFocus', hasFocus[0]
 
-  _focusNextTabbableElement: (element) ->
-    # Set focus to the next tabble element, it is useful for continous deleting
-    # elements from a list from keyboard without having to use mouse
-    tabbableObjects = @$(":tabbable")
-    index = $.inArray(element, tabbableObjects)
-    if index > -1 and index+1 < tabbableObjects.length
-      tabbableObjects[index+1].focus()
-      @set 'currentFocus',tabbableObjects[index+1]
-    else
-      @_focusTabbable()
-
   _checkContainingElement: (containers, element) ->
     for containerItem in containers
       if containerItem is element or $.contains(containerItem, element)
@@ -111,13 +97,11 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     return no
 
   click: (event) ->
-    # debugger
-    modality = @get 'enforceModality'
     isActive = $.contains(@$()[0], event.target)
-    # _currentFocus = $(document.activeElement)[0]
-    if modality? and modality == no and not isActive
+    if not isActive
       @hide() unless @get('enforceModality')
-    else if not isActive or not @_checkContainingElement(@$(':focusable'), event.target)
+      @_focusTabbable()
+    if not @_checkContainingElement(@$(':focusable'), event.target)
       @_focusTabbable()
 
   # capture the TAB key and make a cycle tab loop among the tabbable elements
@@ -129,18 +113,14 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
       @doCancelation()
       event.preventDefault()
     else if event.keyCode == @KEY_CODES.TAB
-      allTabbableObjects = @$(":tabbable")
-
-      # remove close button out of tabbable objects list
-      tabbableObjects = allTabbableObjects.filter (index) ->
-        return allTabbableObjects[index]?.className.indexOf("close") == -1
+      # tabbable objects list without close button
+      tabbableObjects = @$(":tabbable").not('.close')
 
       _currentFocus = $(document.activeElement)?[0]
 
-      _index = $.inArray(_currentFocus, tabbableObjects)
+      _index =tabbableObjects.index _currentFocus
       if _index == -1
         @_focusTabbable()
-      # if there is no tabbable objects, set focus to the modal
       if (tabbableObjects.length > 0)
         first = tabbableObjects[0]
         last = tabbableObjects[tabbableObjects.length - 1]
