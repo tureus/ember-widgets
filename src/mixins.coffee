@@ -80,15 +80,16 @@ Ember.Widgets.TabbableModal = Ember.Mixin.create
     if hasFocus.length == 0
       hasFocus = @$( ":tabbable" )
     if hasFocus.length > 0
-      if hasFocus[0].className.indexOf("close") > -1
-        # if we have more than two tabbable objects, we do not want to tab to
+      focusElement = hasFocus[0]
+      if focusElement.className.indexOf("close") > -1
+        # if we have more than two tabbable objects, we do not want to tab
+        # to close button
         # while if we do not have any choice, the close button is chosen
         if hasFocus.length > 1
-          hasFocus[1].focus()
-          @set 'currentFocus', hasFocus[1]
-          return
-      hasFocus[0].focus()
-      @set 'currentFocus', hasFocus[0]
+          focusElement = hasFocus[1]
+      focusElement.focus()
+      @set 'currentFocus', focusElement
+
 
   _checkContainingElement: (containers, element) ->
     for containerItem in containers
