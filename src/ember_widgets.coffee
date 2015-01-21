@@ -11,7 +11,7 @@ require 'dependencies/ember-addepar-mixins/resize_handler'
 # Ember-Widgets
 require 'build/src/templates'
 require 'build/src/mixins'
-require 'build/src/accordion'
+# require 'build/src/accordion'
 require 'build/src/carousel'
 require 'build/src/editable_label'
 require 'build/src/modal'
